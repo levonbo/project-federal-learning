@@ -11,12 +11,10 @@ from medmnist import INFO, Evaluator
 
 ###*    PARAMETERS  
 
-data_flag = 'pneumoniamnist' #! binary
-# data_flag = 'pathmnist' #! multi class 9 
-# data_flag = 'breastmnist'
+data_flag = 'chestmnist' 
 download = True
 
-NUM_EPOCHS = 3
+NUM_EPOCHS = 5
 BATCH_SIZE = 128
 lr = 0.001
 
@@ -25,10 +23,8 @@ task = info['task']
 n_channels = info['n_channels']
 n_classes = len(info['label'])
 
-print(info['n_channels'])
-
 DataClass = getattr(medmnist, info['python_class'])
-
+print(info['python_class'])
 ###*    load the data from medMNIST and encapsulate into dataloader form 
 
 data_transform = transforms.Compose([
@@ -130,6 +126,8 @@ for epoch in range(NUM_EPOCHS):
 # for p in model.parameters(): #returns models weights
 #    print(p)
 
+amount_total_params = sum(p.numel() for p in model.parameters())
+
 ###*    Evaluation
 
 def test(split):
@@ -160,10 +158,11 @@ def test(split):
         evaluator = Evaluator(data_flag, split)
         metrics = evaluator.evaluate(y_score)
     
-        #print('%s  AUC: %.3f  accuracy:%.3f' % (split, *metrics))
-        print(metrics)
-        
+        print('%s  AUC: %.3f  accuracy:%.3f' % (split, *metrics))
+        #print(metrics)        
 print('==> Evaluating ...')
 test('train')
 test('test')
+print("Using", amount_total_params, "parameters")
+
 
