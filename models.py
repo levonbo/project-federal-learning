@@ -57,12 +57,12 @@ class SmallCNN(nn.Module):
         super(SmallCNN, self).__init__()
 
         self.layer1 = nn.Sequential(
-            nn.Conv2d(in_channels, 16, kernel_size=3),
-            nn.BatchNorm2d(16),
+            nn.Conv2d(in_channels, 8, kernel_size=3),
+            nn.BatchNorm2d(8),
             nn.ReLU())
 
         self.layer2 = nn.Sequential(
-            nn.Conv2d(16, 16, kernel_size=3),
+            nn.Conv2d(8, 16, kernel_size=3),
             nn.BatchNorm2d(16),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2))
@@ -71,31 +71,28 @@ class SmallCNN(nn.Module):
             nn.Conv2d(16, 64, kernel_size=3),
             nn.BatchNorm2d(64),
             nn.ReLU())
-        
-        self.layer4 = nn.Sequential(
-            nn.Conv2d(64, 64, kernel_size=3),
-            nn.BatchNorm2d(64),
-            nn.ReLU())
 
-        self.layer5 = nn.Sequential(
+        self.layer4 = nn.Sequential(
             nn.Conv2d(64, 64, kernel_size=3, padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2))
+        
+        self.adaptive_pool = nn.AdaptiveAvgPool2d((4, 4))
 
         self.fc = nn.Sequential(
-            nn.Linear(64 * 4 * 4, 128),
+            nn.Linear(64 * 4 * 4, 64),
             nn.ReLU(),
-            nn.Linear(128, 128),
+            nn.Linear(64, 32),
             nn.ReLU(),
-            nn.Linear(128, num_classes))
+            nn.Linear(32, num_classes))
 
     def forward(self, x):
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.layer3(x)
         x = self.layer4(x)
-        x = self.layer5(x)
+        x = self.adaptive_pool(x)
         x = x.view(x.size(0), -1)
         x = self.fc(x)
         return x

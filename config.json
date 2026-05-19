@@ -1,0 +1,9 @@
+{
+  "data_flag" : "pathmnist",
+  "NUM_EPOCHS" : 1,
+  "BATCH_SIZE" : 128,
+  "lr" : 0.001,
+  "download" : true,
+  "model_name" : "SmallCCN",
+  "size" : 28
+}
