@@ -16,14 +16,14 @@ file_name = "results.csv"
 
 #* Config from JSON 
 with open("config.json", "r") as file:
-    data = json.load(file)
+    config = json.load(file)
 
-data_flag = data["data_flag"]
-NUM_EPOCHS = data["NUM_EPOCHS"]
-lr = data["lr"]
-model_name = data["model_name"]
-BATCH_SIZE = data["BATCH_SIZE"]
-size = data["size"]
+data_flag = config["data_flag"]
+NUM_EPOCHS = config["NUM_EPOCHS"]
+lr = config["lr"]
+model_name = config["model_name"]
+BATCH_SIZE = config["BATCH_SIZE"]
+size = config["size"]
 
 task = info['task']
 n_channels = info['n_channels']
@@ -34,11 +34,11 @@ if model_name=="BasicCNN":
     model = BasicCNN(in_channels=n_channels, num_classes=n_classes)
 if model_name=="Squeeze":
     model = SqueezeNet()
-if model_name=="SmallCCN":
+if model_name=="SmallCNN":
     model = SmallCNN(in_channels=n_channels, num_classes=n_classes)
 else:
     raise Exception("Sorry, this model is not known") 
-    
+
 # define loss function and optimizer
 if task == "multi-label, binary-class":
     criterion = nn.BCEWithLogitsLoss()
@@ -109,14 +109,15 @@ def test(split):
     
         print('%s  AUC: %.3f  accuracy:%.3f' % (split, *metrics))
         if split=="test":
-            new_data = [data_flag, NUM_EPOCHS, BATCH_SIZE, model_name, size, amount_total_params, '%s  AUC: %.3f  accuracy:%.3f' % (split, *metrics), datetime.date.today()],
+            auc, accuracy = metrics
+            new_data = [data_flag, NUM_EPOCHS, BATCH_SIZE, model_name, size, amount_total_params, "%.3f" % round(auc, 2), "%.3f" % round(accuracy, 2), datetime.date.today()],
             file_exists = os.path.isfile(file_name)
 
             with open(file_name, 'a', newline='') as csvfile:
                 writer = csv.writer(csvfile)
 
                 if not file_exists:
-                    writer.writerow(['Name of database', 'Epochs', 'Batch Size', 'Model name', 'size', 'parameters', 'Accuracy', 'Date'])
+                    writer.writerow(['Name of database', 'Epochs', 'Batch Size', 'Model name', 'size', 'parameters','AUC','Accuracy', 'Date'])
 
                 writer.writerows(new_data)
             print("Results have been saved!... ")        

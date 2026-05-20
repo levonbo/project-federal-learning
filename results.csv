@@ -1,2 +1,10 @@
-Name of database,Epochs,Batch Size,Model name,size,parameters,Accuracy,Date
-pathmnist,1,128,SmallCCN,28,115881,test  AUC: 0.942  accuracy:0.718,2026-05-19
+Name of database,Epochs,Batch Size,Model name,size,parameters,AUC,Accuracy,Date
+pneumoniamnist,50,128,SmallCNN,28,115506,0.960,0.860,2026-05-20
+breastmnist,50,128,SmallCNN,28,115506,0.840,0.820,2026-05-20
+tissuemnist,50,128,SmallCNN,28,115704,0.900,0.620,2026-05-20
+octmnist,50,128,SmallCNN,28,115572,0.920,0.680,2026-05-20
+organamnist,50,128,SmallCNN,28,115803,0.990,0.890,2026-05-20
+organcmnist,50,128,SmallCNN,28,115803,0.990,0.870,2026-05-20
+organsmnist,50,128,SmallCNN,28,115803,0.970,0.740,2026-05-20
+dermamnist,50,128,SmallCNN,28,115815,0.900,0.740,2026-05-20
+bloodmnist,50,128,SmallCNN,28,115848,0.990,0.920,2026-05-20

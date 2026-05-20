@@ -6,16 +6,17 @@ import json
 
 #* Config from JSON 
 with open("config.json", "r") as file:
-    data = json.load(file)
+    config = json.load(file)
 
-data_flag = data["data_flag"]
-download = data["download"]
-BATCH_SIZE = data["BATCH_SIZE"]
-size = data["size"]
-model_name = data["model_name"]
+data_flag = config["data_flag"]
+download = config["download"]
+BATCH_SIZE = config["BATCH_SIZE"]
+size = config["size"]
+model_name = config["model_name"]
 
 
 info = INFO[data_flag]
+
 DataClass = getattr(medmnist, info['python_class'])
 print(info['python_class'], "using a", model_name)
 ###*    load the data from medMNIST and encapsulate into dataloader form 
