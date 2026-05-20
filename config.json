@@ -1,5 +1,5 @@
 {
-  "data_flag": "pathmnist",
+  "data_flag": "chestmnist",
   "NUM_EPOCHS" : 50,
   "BATCH_SIZE" : 128,
   "lr" : 0.001,
