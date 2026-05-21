@@ -32,9 +32,9 @@ n_classes = len(info['label'])
 
 if model_name=="BasicCNN":
     model = BasicCNN(in_channels=n_channels, num_classes=n_classes)
-if model_name=="Squeeze":
+elif model_name=="SqueezeNet":
     model = SqueezeNet()
-if model_name=="SmallCNN":
+elif model_name=="SmallCNN":
     model = SmallCNN(in_channels=n_channels, num_classes=n_classes)
 else:
     raise Exception("Sorry, this model is not known") 

@@ -1,0 +1,25 @@
+Name of database,Epochs,Batch Size,Model name,size,parameters,Accuracy
+pneumoniamnist,50,128,BasicCNN,28,234024,0.841
+breastmnist,50,128,BasicCNN,28,234024,0.795
+tissuemnist,50,128,BasicCNN,28,234024,0.585
+octmnist,50,128,BasicCNN,28,234024,0.726
+organamnist,50,128,BasicCNN,28,234024,0.884
+organcmnist,50,128,BasicCNN,28,234024,0.881
+organsmnist,50,128,BasicCNN,28,234024,0.726
+dermamnist,50,128,BasicCNN,28,234024,0.736
+bloodmnist,50,128,BasicCNN,28,234024,0.939
+pathmnist,50,128,BasicCNN,28,234024,0.778
+retinamnist,50,128,BasicCNN,28,234024,0.537
+chestmnist,50,128,BasicCNN,28,234024,0.947
+pneumoniamnist,50,128,SmallCNN,28,115506,0.860
+breastmnist,50,128,SmallCNN,28,115506,0.820
+tissuemnist,50,128,SmallCNN,28,115704,0.620
+octmnist,50,128,SmallCNN,28,115572,0.680
+organamnist,50,128,SmallCNN,28,115803,0.890
+organcmnist,50,128,SmallCNN,28,115803,0.870
+organsmnist,50,128,SmallCNN,28,115803,0.740
+dermamnist,50,128,SmallCNN,28,115815,0.740
+bloodmnist,50,128,SmallCNN,28,115848,0.920
+pathmnist,50,128,SmallCNN,28,115881,0.810
+retinamnist,50,128,SmallCNN,28,115749,0.530
+chestmnist,50,128,SmallCNN,28,115902,0.950
