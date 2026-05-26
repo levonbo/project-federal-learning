@@ -8,7 +8,8 @@ from medmnist import Evaluator
 import json
 import csv 
 import os 
-import datetime
+from datetime import date, datetime
+from torch.utils.tensorboard import SummaryWriter
 
 #* CSV 
 file_name = "results.csv"
@@ -18,10 +19,13 @@ file_name = "results.csv"
 with open("config.json", "r") as file:
     config = json.load(file)
 
+
+
+
 data_flag = config["data_flag"]
 NUM_EPOCHS = config["NUM_EPOCHS"]
 lr = config["lr"]
-model_name = config["model_name"]
+model_name = (config["model_name"]).lower()
 BATCH_SIZE = config["BATCH_SIZE"]
 size = config["size"]
 
@@ -29,15 +33,20 @@ task = info['task']
 n_channels = info['n_channels']
 n_classes = len(info['label'])
 
+#*Tensorboard 
+run_name = f"{data_flag}__{model_name}__{date.today()}__{datetime.now().strftime("%H")}–{datetime.now().strftime("%M")}–{datetime.now().strftime("%S")}"
+writer = SummaryWriter(f"runs/{run_name}")
 
-if model_name=="BasicCNN":
+if model_name=="basiccnn":
     model = BasicCNN(in_channels=n_channels, num_classes=n_classes)
-elif model_name=="SqueezeNet":
+elif model_name=="squeezenet":
     model = SqueezeNet()
-elif model_name=="SmallCNN":
+elif model_name=="smallcnn": 
     model = SmallCNN(in_channels=n_channels, num_classes=n_classes)
 else:
     raise Exception("Sorry, this model is not known") 
+
+amount_total_params = sum(p.numel() for p in model.parameters())
 
 # define loss function and optimizer
 if task == "multi-label, binary-class":
@@ -48,34 +57,37 @@ else:
 optimizer = optim.SGD(model.parameters(), lr=lr, momentum=0.9)
 
 ###*    TRAINING 
-print("Starting training...")
-for epoch in range(NUM_EPOCHS):
-    print("Epoch",epoch+1)
-    train_correct = 0
-    train_total = 0
-    test_correct = 0
-    test_total = 0
-    
-    model.train()
-    for inputs, targets in tqdm(train_loader):
-        # forward + backward + optimize
-        optimizer.zero_grad()
-        outputs = model(inputs)
-        
-        if task == 'multi-label, binary-class':
-            targets = targets.to(torch.float32)
-            loss = criterion(outputs, targets)
-        else:
-            targets = targets.view(-1).long()
-            loss = criterion(outputs, targets)
-        
-        loss.backward()
-        optimizer.step()
+def training():
+    print("Starting training...")
+    for epoch in range(NUM_EPOCHS):
+        print("Epoch",epoch+1)
+        running_loss = 0.0
+        num_images = 0
+        Aveg_loss = 0
+        model.train()
+        for inputs, targets in tqdm(train_loader):
+            # forward + backward + optimize
+            optimizer.zero_grad()
+            outputs = model(inputs)
+            
+            if task == 'multi-label, binary-class':
+                targets = targets.to(torch.float32)
+                loss = criterion(outputs, targets)
+            else:
+                targets = targets.view(-1).long()
+                loss = criterion(outputs, targets)
+            
+            loss.backward()
+            optimizer.step()
 
-# for p in model.parameters(): #returns models weights
-#    print(p)
-
-amount_total_params = sum(p.numel() for p in model.parameters())
+            running_loss += loss.item() * inputs.size(0)
+            num_images += inputs.size(0)
+            Aveg_loss = running_loss / num_images
+        print(f"Avg loss: {Aveg_loss:.6f}")
+        writer.add_scalar("Loss/train", Aveg_loss, epoch)
+        writer.add_scalar("Heat Map", amount_total_params, len(train_loader))
+    # for p in model.parameters(): #returns models weights
+    #    print(p)
 
 ###*    Evaluation
 
@@ -106,11 +118,12 @@ def test(split):
         
         evaluator = Evaluator(data_flag, split)
         metrics = evaluator.evaluate(y_score)
-    
+        auc, accuracy = metrics
         print('%s  AUC: %.3f  accuracy:%.3f' % (split, *metrics))
-        if split=="test":
+        writer.add_scalar("Accuracy/ Parameters", accuracy, amount_total_params )
+        """if split=="test":
             auc, accuracy = metrics
-            new_data = [data_flag, NUM_EPOCHS, BATCH_SIZE, model_name, size, amount_total_params, "%.3f" % round(auc, 2), "%.3f" % round(accuracy, 2), datetime.date.today()],
+            new_data = [data_flag, NUM_EPOCHS, BATCH_SIZE, model_name, size, amount_total_params, "%.3f" % round(auc, 2), "%.3f" % round(accuracy, 2), date.today()],
             file_exists = os.path.isfile(file_name)
 
             with open(file_name, 'a', newline='') as csvfile:
@@ -120,11 +133,17 @@ def test(split):
                     writer.writerow(['Name of database', 'Epochs', 'Batch Size', 'Model name', 'size', 'parameters','AUC','Accuracy', 'Date'])
 
                 writer.writerows(new_data)
-            print("Results have been saved!... ")        
-print('==> Evaluating ...')
-test('train')
-test('test')
-#print("Using", amount_total_params, "parameters")
-print("\n")
+            print("Results have been saved!... ")"""
 
 
+
+
+def main():
+    training()
+    print('==> Evaluating ...')
+    test('train')
+    test('test')
+    #print("Using", amount_total_params, "parameters")
+
+if __name__ == "__main__":
+    main()

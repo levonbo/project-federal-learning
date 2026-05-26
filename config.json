@@ -1,9 +1,9 @@
 {
-  "data_flag": "retinamnist",
-  "NUM_EPOCHS" : 1,
+  "data_flag": "pneumoniamnist",
+  "NUM_EPOCHS" : 10,
   "BATCH_SIZE" : 128,
   "lr" : 0.001,
   "download" : true,
-  "model_name" : "SqueezeNet",
-  "size" : 224
+  "model_name" : "SmallCNN",
+  "size" : 28
 }

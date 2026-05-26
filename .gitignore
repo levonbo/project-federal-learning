@@ -1,2 +1,4 @@
 medmnist-venv/
 yaml-testing.py
+.vscode
+runs/
