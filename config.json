@@ -1,9 +1,10 @@
 {
   "data_flag": "pneumoniamnist",
-  "NUM_EPOCHS" : 10,
+  "NUM_EPOCHS" : 30,
   "BATCH_SIZE" : 128,
-  "lr" : 0.001,
+  "lr" : 1.574583e-4,
   "download" : true,
   "model_name" : "SmallCNN",
-  "size" : 28
+  "size" : 28,
+  "optimizer" : "Adam"
 }

@@ -2,25 +2,23 @@ import optuna
 import torch.optim as optim
 import torch
 import torch.nn as nn
-import json
-from models import SmallCNN
-from main_medmnist import n_channels, n_classes, task
-from dataset import train_loader, info
-
-
-#* Config from JSON 
-with open("config.json", "r") as file:
-    config = json.load(file)
-
-data_flag = config["data_flag"]
-
-task = info['task']
-n_channels = info['n_channels']
-n_classes = len(info['label'])
+from models import BasicCNN, SqueezeNet, SmallCNN
+from dataset import train_loader
+from config import config, n_channels, n_classes, task
 
 
 def objective(trial) -> float:
-    model = SmallCNN(in_channels=n_channels, num_classes=n_classes)
+    #* Load Model
+    if config.model_name.lower()=="basiccnn":
+        model = BasicCNN(in_channels=n_channels, num_classes=n_classes)
+    elif config.model_name.lower()=="squeezenet":
+        model = SqueezeNet()
+    elif config.model_name.lower()=="smallcnn": 
+        model = SmallCNN(in_channels=n_channels, num_classes=n_classes)
+    else:
+        raise Exception("Sorry, this model is not known") 
+
+    
 
     optimizer_name = trial.suggest_categorical("optimizer", ["Adam", "RMSprop", "SGD"])
     learning_rate = trial.suggest_float('lr', 1e-4, 1e-1, log=True)
@@ -35,7 +33,7 @@ def objective(trial) -> float:
     Aveg_loss = 0
 
     model.train()
-    for epoch in range(5):
+    for epoch in range(30):
         running_loss = 0.0
         num_images = 0
         for inputs, targets in train_loader:
@@ -58,5 +56,5 @@ def objective(trial) -> float:
     return round(Aveg_loss,2)
 
 study = optuna.create_study(direction='minimize')
-study.optimize(objective, n_trials=1)
+study.optimize(objective, n_trials=20)
 print("Best Hyperparameters:", study.best_params)
