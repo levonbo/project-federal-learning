@@ -1,4 +1,4 @@
-from config import model, task, config, writer, amount_total_params
+from config import model, task, config
 import torch 
 from dataset import train_loader_at_eval, test_loader
 from medmnist import Evaluator
@@ -32,6 +32,4 @@ def test(split):
         
         evaluator = Evaluator(config.data_flag, split)
         metrics = evaluator.evaluate(y_score)
-        _, accuracy = metrics
-        print('%s  AUC: %.3f  accuracy:%.3f' % (split, *metrics))
-        writer.add_scalar("Accuracy/ Parameters", accuracy, amount_total_params)
+    return split,metrics

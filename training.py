@@ -1,5 +1,5 @@
 import torch
-from config import config, model, optimizer, task, criterion, amount_total_params, writer 
+from config import config, model, optimizer, task, criterion, n_total_params, writer 
 from tqdm import tqdm
 from dataset import train_loader
 
@@ -33,4 +33,3 @@ def training():
             Aveg_loss = running_loss / num_images
         print(f"Avg loss: {Aveg_loss:.6f}")
         writer.add_scalar("Loss/train", Aveg_loss, epoch)
-        writer.add_scalar("Heat Map", amount_total_params, len(train_loader))
