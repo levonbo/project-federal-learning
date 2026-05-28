@@ -1,5 +1,5 @@
 import torch
-from config import config, model, optimizer, task, criterion, n_total_params, writer 
+from config import config, model, optimizer, task, criterion, writer 
 from tqdm import tqdm
 from dataset import train_loader
 

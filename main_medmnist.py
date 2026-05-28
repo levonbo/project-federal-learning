@@ -1,7 +1,6 @@
 from training import training
 from testing import test
 from config import n_total_params, writer, config, save_result, n_train_samples
-from dataset import train_loader
 
 def main():
     training()
@@ -17,7 +16,7 @@ def main():
     if config.NUM_EPOCHS >= 30: 
         writer.add_scalar("Accuracy/ Parameters", test_accuracy, n_total_params)
         print("Results saved in Tensorboard!")
-        save_result(n_total_params, n_train_samples, ".3f" %test_accuracy)
+        save_result(n_total_params, n_train_samples, ".3f"%test_accuracy)
     else:   
         print("Results not saved in Tensorboard, due to not enough Epochs")
 
