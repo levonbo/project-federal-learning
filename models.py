@@ -1,6 +1,7 @@
 import torch.nn as nn 
 import math
 import torch
+import config
 
 #* Simple CNN 
 class BasicCNN(nn.Module):
@@ -180,3 +181,14 @@ class SqueezeNet(nn.Module): #Only 3 channels and only size 224
 def fire_layer(inp, s, e):
     f = fire(inp, s, e)
     return f
+
+def get_model(model_name, data_flag):
+    _,_, n_channels, n_classes,_ = config.get_info(data_flag)
+    if model_name.lower()=="basiccnn":
+        return BasicCNN(in_channels=n_channels, num_classes=n_classes)
+    elif model_name.lower()=="squeezenet":
+        return SqueezeNet()
+    elif model_name.lower()=="smallcnn": 
+        return SmallCNN(in_channels=n_channels, num_classes=n_classes)
+    else:
+        raise Exception("Sorry, this model is not known")

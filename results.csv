@@ -1,2 +1,13 @@
-params,train_samples,accuracy
-115506,4708,0.891
+params,train_samples,accuracy,additional information
+115506,4708,0.833,"('pneumoniamnist', 'SmallCNN', 30, 'Adam', 128)"
+115506,4708,0.625,"('pneumoniamnist', 'SmallCNN', 30, 'SGD', 128)"
+115506,4708,0.851,"('pneumoniamnist', 'SmallCNN', 30, 'SGD', 128)"
+115506,4708,0.856,"('pneumoniamnist', 'SmallCNN', 30, 'SGD', 128)"
+115506,4708,0.838,"('pneumoniamnist', 'SmallCNN', 30, 'SGD', 128)"
+115506,4708,0.854,"('pneumoniamnist', 'SmallCNN', 30, 'SGD', 128)"
+115506,4708,0.843,"('pneumoniamnist', 'SmallCNN', 30, 'SGD', 128)"
+115506,4708,0.829,"('pneumoniamnist', 'SmallCNN', 30, 'SGD', 128)"
+115506,4708,0.857,"('pneumoniamnist', 'SmallCNN', 30, 'SGD', 128)"
+115506,4708,0.853,"('pneumoniamnist', 'SmallCNN', 30, 'SGD', 128)"
+115506,4708,0.623,"('pneumoniamnist', 'SmallCNN', 2, 'SGD', 128)"
+115506,4708,0.867,"('pneumoniamnist', 'SmallCNN', 30, 'Adam', 128)"

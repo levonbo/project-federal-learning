@@ -3,15 +3,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import csv
 
-with open("results.csv", "r") as f:
-    data = csv.reader(f)
-    for row in data:
-        print(row)
-
 # Deine Runs als DataFrame
-df = pd.read_csv("results.csv")
-
-print(type(df))
+df = pd.read_csv("results.csv", usecols=["params", "train_samples", "accuracy"])
 
 # Pivot für Heatmap
 pivot = df.pivot(index="train_samples", columns="params", values="accuracy")

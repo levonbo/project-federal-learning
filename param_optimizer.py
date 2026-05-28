@@ -2,28 +2,22 @@ import optuna
 import torch.optim as optim
 import torch
 import torch.nn as nn
-from models import BasicCNN, SqueezeNet, SmallCNN
-from dataset import train_loader
-from config import config, n_channels, n_classes, task
+import models
+import config
+import dataset
 
 
 def objective(trial) -> float:
-    #* Load Model
-    if config.model_name.lower()=="basiccnn":
-        model = BasicCNN(in_channels=n_channels, num_classes=n_classes)
-    elif config.model_name.lower()=="squeezenet":
-        model = SqueezeNet()
-    elif config.model_name.lower()=="smallcnn": 
-        model = SmallCNN(in_channels=n_channels, num_classes=n_classes)
-    else:
-        raise Exception("Sorry, this model is not known") 
+    data_flag = "retinamnist"
+    _, task, _, _,_ = config.get_info(data_flag)
+    model = models.get_model(config.param.model_name, data_flag)
 
-    
-
-    optimizer_name = trial.suggest_categorical("optimizer", ["Adam", "RMSprop", "SGD"])
+    optimizer_name = trial.suggest_categorical("Optimizer", ["Adam", "RMSprop", "SGD", "RMSprop","Adadelta"])
     learning_rate = trial.suggest_float('lr', 1e-4, 1e-1, log=True)
-    #batch_size = trial.suggest_int('bs', 4, 16, step=4)
+    BATCH_SIZE = trial.suggest_categorical('Batch Size', [16, 32, 64, 128])
     optimizer = getattr(optim, optimizer_name)(model.parameters(), lr=learning_rate)
+
+    train_loader, _, _ = dataset.get_loader(data_flag, config.param.model_name, BATCH_SIZE, config.param.download, config.param.size)    
 
     if task == "multi-label, binary-class":
         criterion = nn.BCEWithLogitsLoss()
@@ -33,7 +27,7 @@ def objective(trial) -> float:
     Aveg_loss = 0
 
     model.train()
-    for epoch in range(30):
+    for epoch in range(3):
         running_loss = 0.0
         num_images = 0
         for inputs, targets in train_loader:
@@ -56,5 +50,5 @@ def objective(trial) -> float:
     return round(Aveg_loss,2)
 
 study = optuna.create_study(direction='minimize')
-study.optimize(objective, n_trials=20)
+study.optimize(objective, n_trials=2)
 print("Best Hyperparameters:", study.best_params)

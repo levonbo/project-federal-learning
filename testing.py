@@ -1,11 +1,9 @@
-from config import model, task, config
 import torch 
-from dataset import train_loader_at_eval, test_loader
 from medmnist import Evaluator
 
 ###*    Evaluation
 
-def test(split):
+def test(split, model, train_loader_at_eval, test_loader, task, data_flag):
     model.eval()
     y_true = torch.tensor([])
     y_score = torch.tensor([])
@@ -30,6 +28,6 @@ def test(split):
         y_true = y_true.numpy()
         y_score = y_score.detach().numpy()
         
-        evaluator = Evaluator(config.data_flag, split)
+        evaluator = Evaluator(data_flag, split)
         metrics = evaluator.evaluate(y_score)
-    return split,metrics
+        return split,metrics
