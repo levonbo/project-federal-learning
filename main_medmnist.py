@@ -34,7 +34,7 @@ def main():
         test_auc, test_accuracy = test_metrics
         print(f"{test_split} AUC: {test_auc:.3f}, Accuracy: {test_accuracy:.3f}")
 
-        if config.param.NUM_EPOCHS >= 2: 
+        if config.param.NUM_EPOCHS >= 30: 
             writer.add_text("param", f"Optimizer: {optimizer} | Dataset: {medmnist_dataset} | Epochs: {config.param.NUM_EPOCHS} | Batch Size: {config.param.BATCH_SIZE} | lr: {config.param.lr} | Model: {config.param.model_name} | Image size: {config.param.size} ")
             writer.add_scalar("Accuracy/ Parameters", test_accuracy, config.get_n_total_params(model))
             print("Results saved in Tensorboard!")

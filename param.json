@@ -1,6 +1,6 @@
 {
-  "data_flag": ["pneumoniamnist","breastmnist","tissuemnist","octmnist","organamnist","organcmnist","organamnist"],
-  "NUM_EPOCHS" : 30,
+  "data_flag": ["pneumoniamnist"],
+  "NUM_EPOCHS" : 2,
   "BATCH_SIZE" : 128,
   "lr" : 1.574583e-4,
   "download" : true,

@@ -7,7 +7,7 @@ import config
 import dataset
 
 
-datasets = ["pneumoniamnist","breastmnist","tissuemnist","octmnist","organamnist","organcmnist","organamnist"]
+datasets = ["pneumoniamnist"]
 
 def make_objective(data_flag):
     def objective(trial) -> float:
@@ -27,7 +27,7 @@ def make_objective(data_flag):
 
         model.train()
         total_loss, total_epochs = 0.0, 0
-        for epoch in range(30):
+        for epoch in range(2):
             running_loss, num_images = 0.0, 0
             for inputs, targets in train_loader:
                 optimizer.zero_grad()
@@ -51,5 +51,6 @@ def make_objective(data_flag):
 # Run one study per dataset
 for data_flag in datasets:
     study = optuna.create_study(direction='minimize')
-    study.optimize(make_objective(data_flag), n_trials=20)
+    study.optimize(make_objective(data_flag), n_trials=2)
     print(f"Best Hyperparameters for {data_flag}: {study.best_params}")
+    print("\n")
