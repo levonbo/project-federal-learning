@@ -3,12 +3,12 @@ from medmnist import Evaluator
 
 ###*    Evaluation
 
-def test(split, model, train_loader_at_eval, test_loader, task, data_flag):
+def test(split, model, test_loader, task, data_flag):
     model.eval()
     y_true = torch.tensor([])
     y_score = torch.tensor([])
     
-    data_loader = train_loader_at_eval if split == 'train' else test_loader
+    data_loader = test_loader
 
     with torch.no_grad():
         for inputs, targets in data_loader:

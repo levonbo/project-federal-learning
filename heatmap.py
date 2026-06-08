@@ -3,14 +3,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import csv
 
-# Deine Runs als DataFrame
 df = pd.read_csv("results.csv", usecols=["params", "train_samples", "accuracy"])
 
-# Pivot für Heatmap
 pivot = df.pivot(index="train_samples", columns="params", values="accuracy")
 pivot = pivot.sort_index(ascending=False)
 
-# Plot
 sns.heatmap(pivot, annot=True, fmt=".2f", cmap="YlOrRd")
 plt.title("Accuracy: Parameter Count vs. Training Samples")
 plt.xlabel("Number of Parameters")

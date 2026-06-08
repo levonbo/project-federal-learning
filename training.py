@@ -26,5 +26,5 @@ def train_model(model, train_loader, optimizer, task, criterion):
         running_loss += loss.item() * inputs.size(0)
         num_images += inputs.size(0)
         Aveg_loss = running_loss / num_images
-    print(f"Avg loss: {Aveg_loss:.6f}")
+    print(f"Train: Avg loss: {Aveg_loss:.6f}")
     return Aveg_loss

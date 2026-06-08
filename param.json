@@ -1,8 +1,8 @@
 {
-  "data_flag": ["pneumoniamnist"],
-  "NUM_EPOCHS" : 2,
-  "BATCH_SIZE" : 128,
-  "lr" : 1.574583e-4,
+  "data_flag": ["organamnist"],
+  "NUM_EPOCHS" : 3,
+  "BATCH_SIZE" : 16,
+  "lr" : 3.5e-4,
   "download" : true,
   "model_name" : "SmallCNN",
   "size" : 28,

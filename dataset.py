@@ -17,9 +17,10 @@ def get_loader(data_flag, model_name, BATCH_SIZE, download, size):
     ###* Dataset 
     train_dataset = DataClass(split='train', transform=data_transform, download=download, size=size, mmap_mode='r') #224
     test_dataset = DataClass(split='test', transform=data_transform, download=download, size=size)
+    val_dataset = DataClass(split='val', transform=data_transform, download=download, size=size)
 
     ###* Dataloader 
     train_loader = torchdata.DataLoader(dataset=train_dataset, batch_size=BATCH_SIZE, shuffle=True)
-    train_loader_at_eval = torchdata.DataLoader(dataset=train_dataset, batch_size=2*BATCH_SIZE, shuffle=False)
+    val_loader = torchdata.DataLoader(dataset=val_dataset, batch_size=2*BATCH_SIZE, shuffle=False)
     test_loader = torchdata.DataLoader(dataset=test_dataset, batch_size=2*BATCH_SIZE, shuffle=False)
-    return train_loader,train_loader_at_eval, test_loader
+    return train_loader,val_loader, test_loader

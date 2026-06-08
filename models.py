@@ -1,4 +1,5 @@
 import torch.nn as nn 
+import torch.nn.functional as F
 import math
 import torch
 import config
@@ -98,6 +99,30 @@ class SmallCNN(nn.Module):
         x = self.fc(x)
         return x
     
+#* Mini CNN 
+
+class MiniCNN(nn.Module):
+    def __init__(self, in_channels, num_classes):
+        super(MiniCNN, self).__init__()
+        
+        self.features = nn.Sequential(
+            nn.ZeroPad2d(2),
+            nn.Conv2d(in_channels, 16, kernel_size=5, stride=1),
+            nn.BatchNorm2d(16),
+            nn.ReLU(),
+            nn.MaxPool2d(2)
+        )
+        
+        self.classifier = nn.Sequential(
+            nn.Flatten(),
+            nn.LazyLinear(out_features=num_classes),
+            nn.Softmax(dim=1)
+        )
+    
+    def forward(self, x):
+        x = self.features(x)
+        x = self.classifier(x)
+        return x
 #* Squeeze Net 
 class fire(nn.Module):
     def __init__(self, inplanes, squeeze_planes, expand_planes):
@@ -182,13 +207,63 @@ def fire_layer(inp, s, e):
     f = fire(inp, s, e)
     return f
 
+
+class AlexNet(nn.Module):
+    def __init__(self, in_channels, num_classes):
+        super(AlexNet, self).__init__()
+
+        self.features = nn.Sequential(
+        
+            nn.Conv2d(in_channels, 32, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(32),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+
+            nn.Conv2d(32, 64, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(64),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+
+            # Conv3
+            nn.Conv2d(64, 128, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(128),
+            nn.ReLU(inplace=True),
+
+            nn.Conv2d(128, 256, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(256),
+            nn.ReLU(inplace=True),
+
+            nn.Conv2d(256, 256, kernel_size=3, stride=1, padding=1),
+            nn.BatchNorm2d(256),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+        )
+
+        self.classifier = nn.Sequential(
+            nn.Flatten(),
+            nn.LazyLinear(4096),
+            nn.ReLU(inplace=True),
+            nn.Dropout(p=0.5),
+            nn.Linear(4096, 4096),
+            nn.ReLU(inplace=True),
+            nn.Dropout(p=0.5),
+            nn.Linear(4096, num_classes),
+        )
+
+    def forward(self, x):
+        x = self.features(x)
+        x = self.classifier(x)
+        return x
+
 def get_model(model_name, data_flag):
     _,_, n_channels, n_classes,_ = config.get_info(data_flag)
     if model_name.lower()=="basiccnn":
         return BasicCNN(in_channels=n_channels, num_classes=n_classes)
-    elif model_name.lower()=="squeezenet":
-        return SqueezeNet()
+    elif model_name.lower()=="minicnn":
+        return MiniCNN(in_channels=n_channels, num_classes=n_classes)
     elif model_name.lower()=="smallcnn": 
         return SmallCNN(in_channels=n_channels, num_classes=n_classes)
+    elif model_name.lower()=="alexnet": 
+        return AlexNet(in_channels=n_channels, num_classes=n_classes)
     else:
         raise Exception("Sorry, this model is not known")

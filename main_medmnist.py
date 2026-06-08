@@ -5,32 +5,40 @@ import models
 import config
 import training
 import testing
+import validation
 import csv_tensorboard
+import random
+import numpy as np 
+import torch
 
+now = datetime.now()
 
 
 def main():
     for medmnist_dataset in config.param.data_flag:
-        now = datetime.now()
-        train_loader, train_loader_at_eval, test_loader = dataset.get_loader(medmnist_dataset, config.param.model_name, config.param.BATCH_SIZE, config.param.download, config.param.size)
+        #* Seed setting
+        seed = 42
+        random.seed(seed)
+        np.random.seed(seed)
+        torch.manual_seed(seed)
+
+        train_loader, val_loader, test_loader = dataset.get_loader(medmnist_dataset, config.param.model_name, config.param.BATCH_SIZE, config.param.download, config.param.size)
         model = models.get_model(config.param.model_name, medmnist_dataset)
         optimizer = config.get_optimizer(config.param.optimizer, model, config.param.lr)
         criterion = config.get_criterion(medmnist_dataset)
         _, task, _, _, n_train_samples = config.get_info(medmnist_dataset)
         run_name = f"{medmnist_dataset}__{config.param.model_name}__{config.param.NUM_EPOCHS}__{now:%Y-%m-%d__%H-%M-%S}"
         writer = SummaryWriter(f"runs/{run_name}")
-        print("Starting training...")
+        #* -> Training
+        print("Starting training...") 
         for epoch in range(config.param.NUM_EPOCHS):
             print("Epoch",epoch+1)
-            Aveg_loss = training.train_model(model, train_loader, optimizer, task, criterion)
-            writer.add_scalar("Loss/train", Aveg_loss, epoch)
-
+            training_loss = training.train_model(model, train_loader, optimizer, task, criterion)
+            validation_loss = validation.validate_model(model, val_loader, task,criterion) 
+            writer.add_scalar("Loss/train", training_loss, epoch+1)
+            writer.add_scalar("Loss/validate", validation_loss, epoch+1)
         print('==> Evaluating ...')
-        train_split, train_metrics = testing.test('train', model, train_loader_at_eval, test_loader, task, medmnist_dataset)
-        test_split, test_metrics = testing.test('test', model, train_loader_at_eval, test_loader, task, medmnist_dataset)
-        train_auc, train_accuracy = train_metrics
-        print(f"{train_split} AUC: {train_auc:.3f}, Accuracy: {train_accuracy:.3f}")
-
+        test_split, test_metrics = testing.test('test', model, test_loader, task, medmnist_dataset)
         test_auc, test_accuracy = test_metrics
         print(f"{test_split} AUC: {test_auc:.3f}, Accuracy: {test_accuracy:.3f}")
 
