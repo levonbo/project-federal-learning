@@ -10,3 +10,5 @@ params,train_samples,accuracy,additional information115506,546,0.859,"('breastmn
 115506,4708,0.870,"('pneumoniamnist', 'SmallCNN', 30, 'Adam', 16)"
 115506,4708,0.870,"('pneumoniamnist', 'SmallCNN', 30, 'Adam', 16)"
 115506,4708,0.867,"('pneumoniamnist', 'SmallCNN', 30, 'Adam', 16)"
+115506,4708,0.869,"('pneumoniamnist', 'SmallCNN', 100, 'Adam', 16)"
+115881,89996,0.839,"('pathmnist', 'SmallCNN', 30, 'Adam', 64)"

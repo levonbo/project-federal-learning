@@ -1,10 +1,10 @@
 {
   "data_flag": ["organamnist"],
-  "NUM_EPOCHS" : 3,
+  "NUM_EPOCHS" : 40,
   "BATCH_SIZE" : 16,
-  "lr" : 3.5e-4,
+  "lr" : 2.6e-3,
   "download" : true,
-  "model_name" : "SmallCNN",
+  "model_name" : "BasicCNN",
   "size" : 28,
   "optimizer" : "Adam"
 }
