@@ -8,16 +8,16 @@ from datetime import date, datetime
 import csv
 from pathlib import Path
 
-#* Load json data
-def _load() -> SimpleNamespace:
-    with open("param.json", "r") as file:
-        data = json.load(file)
-    return json.loads(
-        json.dumps(data),
-        object_hook=lambda d: SimpleNamespace(**d)
-    )
-
-param= _load()
+#* Parameters
+#num_clients = 3 
+rounds = 3 
+model_name = "basiccnn"
+data_flag ="organamnist"
+num_epoch =  10
+batch_size = 16
+lr = 2.6e-3
+size = 28
+optimizer = "Adam"
 
 def get_info(data_flag): 
     #* Load info of medmnist dataset
@@ -31,23 +31,3 @@ def get_info(data_flag):
 #* Total amount of parameters in used 
 def get_n_total_params(model):
     return sum(p.numel() for p in model.parameters())
-
-#* optimizer
-def get_optimizer(optimizer,model,lr):
-    if optimizer.lower() == "sgd":
-        return optim.SGD(model.parameters(), lr=lr, momentum=0.9)
-    elif optimizer.lower() == "adam":
-        return optim.Adam(model.parameters(), lr)
-    elif optimizer.lower() == "rmsprop":
-        return optim.RMSprop(model.parameters(), lr=lr)
-    elif optimizer.lower() == "adadelta":
-        return optim.Adadelta(model.parameters())
-
-
-#*criterion
-def get_criterion(data_flag):
-    if INFO[data_flag]['task'] == "multi-label, binary-class":
-        return nn.BCEWithLogitsLoss()
-    else:
-        return nn.CrossEntropyLoss()
-
