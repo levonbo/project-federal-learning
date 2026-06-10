@@ -2,4 +2,6 @@ medmnist-venv/
 yaml-testing.py
 .vscode/
 runs/
+runs_01/
+runs_02/
 __pycache__/
