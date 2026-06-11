@@ -10,14 +10,13 @@ from pathlib import Path
 
 #* Parameters
 #num_clients = 3 
-rounds = 3 
+#rounds = 3 
 model_name = "basiccnn"
 data_flag ="organamnist"
-num_epoch =  10
+num_epoch =  3
 batch_size = 16
 lr = 2.6e-3
 size = 28
-optimizer = "Adam"
 
 def get_info(data_flag): 
     #* Load info of medmnist dataset
