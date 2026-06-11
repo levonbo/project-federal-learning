@@ -8,17 +8,17 @@ import dataset
 import numpy as np
 from medmnist import Evaluator
 
-def objective(trial): 
-    score = None
+def objective(trial):
+    optimizer_name = trial.suggest_categorical("Optimizer", ["Adam", "RMSprop", "SGD"])
+    learning_rate = trial.suggest_float('lr', 1e-4, 1e-1, log=True)
+    BATCH_SIZE = trial.suggest_categorical('Batch Size', [16, 32, 64, 128])
+
     mnist_datasets = ["pathmnist", "chestmnist","dermamnist", "octmnist", "pneumoniamnist", "retinamnist", "breastmnist", "bloodmnist", "tissuemnist","organamnist", "organcmnist","organsmnist"]
     dataset_scores = []
     for data_flag in mnist_datasets:
         _, task, _, _,_ = config.get_info(data_flag)
         model = models.get_model(config.param.model_name, data_flag)
 
-        optimizer_name = trial.suggest_categorical("Optimizer", ["Adam", "RMSprop", "SGD","Adadelta"])
-        learning_rate = trial.suggest_float('lr', 1e-4, 1e-1, log=True)
-        BATCH_SIZE = trial.suggest_categorical('Batch Size', [16, 32, 64, 128])
         optimizer = getattr(optim, optimizer_name)(model.parameters(), lr=learning_rate)
 
         train_loader, validation_loader, _ = dataset.get_loader(data_flag, config.param.model_name, BATCH_SIZE, config.param.download, config.param.size)    
