@@ -20,7 +20,7 @@ def get_loader(data_flag, model_name, BATCH_SIZE, download, size):
     val_dataset = DataClass(split='val', transform=data_transform, download=download, size=size)
 
     ###* Dataloader 
-    train_loader = torchdata.DataLoader(dataset=train_dataset, batch_size=BATCH_SIZE, shuffle=True)
+    train_loader = torchdata.DataLoader(dataset=train_dataset, batch_size=BATCH_SIZE, shuffle=True,drop_last=True)
     val_loader = torchdata.DataLoader(dataset=val_dataset, batch_size=2*BATCH_SIZE, shuffle=False)
     test_loader = torchdata.DataLoader(dataset=test_dataset, batch_size=2*BATCH_SIZE, shuffle=False)
     return train_loader,val_loader, test_loader

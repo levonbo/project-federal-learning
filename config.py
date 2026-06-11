@@ -33,15 +33,15 @@ def get_n_total_params(model):
     return sum(p.numel() for p in model.parameters())
 
 #* optimizer
-def get_optimizer(optimizer,model,lr):
+def get_optimizer(optimizer,model):
     if optimizer.lower() == "sgd":
-        return optim.SGD(model.parameters(), lr=lr, momentum=0.9)
+        return optim.SGD(model.parameters(), lr=1e-3, momentum=0.9)
     elif optimizer.lower() == "adam":
-        return optim.Adam(model.parameters(), lr)
+        return optim.Adam(model.parameters(), lr=1e-3)
     elif optimizer.lower() == "rmsprop":
-        return optim.RMSprop(model.parameters(), lr=lr)
+        return optim.RMSprop(model.parameters(), lr=1e-2, alpha=0.99, momentum=0.9)
     elif optimizer.lower() == "adadelta":
-        return optim.Adadelta(model.parameters())
+        return optim.Adadelta(model.parameters(), lr=1.0, rho=0.9, eps=1e-6)
 
 
 #*criterion

@@ -1,7 +1,7 @@
 import torch 
 from medmnist import Evaluator
 
-###*    Evaluation
+###*    Testing
 
 def test(split, model, test_loader, task, data_flag):
     model.eval()
