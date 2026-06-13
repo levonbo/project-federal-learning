@@ -12,7 +12,6 @@ def validate_model(model, val_loader, task, criterion,data_flag):
     with torch.no_grad():
         for inputs, targets in val_loader:
             outputs = model(inputs)
-
             if task == 'multi-label, binary-class':
                 targets = targets.to(torch.float32)
                 val_loss += criterion(outputs, targets).item() * inputs.size(0)

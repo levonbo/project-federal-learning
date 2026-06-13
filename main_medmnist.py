@@ -23,12 +23,12 @@ def main(seed):
         torch.manual_seed(seed)
         train_loader, val_loader, test_loader = dataset.get_loader(medmnist_dataset, config.param.model_name, config.param.BATCH_SIZE, config.param.download, config.param.size)
         model = models.get_model(config.param.model_name, medmnist_dataset)
-        optimizer = config.get_optimizer(config.param.optimizer, model)
+        optimizer = config.get_optimizer(config.param.optimizer, model, lr=config.param.lr)
         criterion = config.get_criterion(medmnist_dataset)
         _, task, _, _, n_train_samples = config.get_info(medmnist_dataset)
         writer = None
         if record_tensorboard == True: 
-            run_name = f"{medmnist_dataset}__{config.param.model_name}__{config.param.NUM_EPOCHS}__{now:%Y-%m-%d__%H-%M-%S}"
+            run_name = f"{medmnist_dataset}__{config.param.model_name}__{config.param.NUM_EPOCHS}__{now:%Y-%m-%d__%H-%M-%S}__{"Dropout"}"
             writer = SummaryWriter(f"testoptimizer/{run_name}")
         #* -> Training
         print("Starting training...") 
