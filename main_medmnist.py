@@ -11,6 +11,7 @@ import random
 import numpy as np 
 import torch
 import matplotlib.pyplot as plt
+import io
 
 now = datetime.now()
 record_tensorboard = True
@@ -25,7 +26,7 @@ def main(seed):
         model = models.get_model(config.param.model_name, medmnist_dataset)
         optimizer = config.get_optimizer(config.param.optimizer, model, lr=config.param.lr)
         criterion = config.get_criterion(medmnist_dataset)
-        _, task, _, _, n_train_samples = config.get_info(medmnist_dataset)
+        _, task, n_channels, _, n_train_samples = config.get_info(medmnist_dataset)
         writer = None
         if record_tensorboard == True: 
             run_name = f"{medmnist_dataset}__{config.param.model_name}__{config.param.NUM_EPOCHS}__{now:%Y-%m-%d__%H-%M-%S}__{"Dropout"}"
@@ -67,7 +68,10 @@ def main(seed):
         else:   
             print("Results not saved in Tensorboard")
             print("\n")
-        plt.show()
+        buf = io.BytesIO()
+        plt.savefig(buf, format='png')
+        buf.seek(0)
+        image = tf.image.decode_png(buf.getvalue(), channels=n_channels)
         
 if __name__ == "__main__":
     main(seed=42)
