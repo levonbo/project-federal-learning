@@ -6,17 +6,16 @@ import models
 import config
 import dataset
 import numpy as np
-from medmnist import Evaluator
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
 
 def objective(trial):
-    optimizer_name = trial.suggest_categorical("Optimizer", ["Adam", "RMSprop", "SGD"])
-    learning_rate = trial.suggest_float('lr', 1e-4, 1e-1, log=True)
+    optimizer_name = trial.suggest_categorical("Optimizer", ["RMSprop"])
+    learning_rate = trial.suggest_float('lr', 0.0001,0.01, log=True)
     BATCH_SIZE = trial.suggest_categorical('Batch Size', [16, 32, 64, 128])
 
-    mnist_datasets = ["retinamnist", "breastmnist","dermamnist"]
+    mnist_datasets = ["pathmnist", "chestmnist", "dermamnist", "octmnist", "pneumoniamnist", "retinamnist", "breastmnist", "bloodmnist", "organamnist", "organcmnist", " organsmnist"]
     vall_loss_all = []
     for data_flag in mnist_datasets:
         _, task, _, _,_ = config.get_info(data_flag)
@@ -31,7 +30,7 @@ def objective(trial):
         else:
             criterion = nn.CrossEntropyLoss()
 
-        for _ in range(2):
+        for _ in range(5):
             model.train()
             for inputs, targets in train_loader:
                 inputs, targets = inputs.to(device), targets.to(device)
@@ -73,6 +72,6 @@ def objective(trial):
         vall_loss_all.append(val_loss) #type: ignore
     return np.mean(vall_loss_all)
 
-study = optuna.create_study(direction='maximize')
-study.optimize(objective, n_trials=2) # type: ignore
+study = optuna.create_study(direction='minimize')
+study.optimize(objective, n_trials=1) # type: ignore
 print("Best Hyperparameters:", study.best_params)

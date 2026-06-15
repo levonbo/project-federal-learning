@@ -10,11 +10,10 @@ import csv_tensorboard
 import random
 import numpy as np 
 import torch
-import matplotlib.pyplot as plt
-import io
 
 now = datetime.now()
 record_tensorboard = True
+uuid = random.randint(0,999)
 
 def main(seed):
     for medmnist_dataset in config.param.data_flag:
@@ -29,8 +28,8 @@ def main(seed):
         _, task, n_channels, _, n_train_samples = config.get_info(medmnist_dataset)
         writer = None
         if record_tensorboard == True: 
-            run_name = f"{medmnist_dataset}__{config.param.model_name}__{config.param.NUM_EPOCHS}__{now:%Y-%m-%d__%H-%M-%S}__{"Dropout"}"
-            writer = SummaryWriter(f"testoptimizer/{run_name}")
+            run_name = f"{uuid}_{medmnist_dataset}_{now:%Y-%m-%d__%H-%M}"
+            writer = SummaryWriter(f"retina_tests/{run_name}")
         #* -> Training
         print("Starting training...") 
         training_loss = []
@@ -41,20 +40,12 @@ def main(seed):
             train_loss = training.train_model(model, train_loader, optimizer, task, criterion)
             val_loss,auc,acc = validation.validate_model(model, val_loader, task, criterion, medmnist_dataset)
 
-            training_loss.append(train_loss)
-            validation_loss.append(val_loss)
+            #training_loss.append(train_loss)
+            #validation_loss.append(val_loss)
             if writer is not None:
-                writer.add_scalar("Train/Loss", train_loss, epoch)
-                writer.add_scalar("Validation/Loss", val_loss, epoch)
+                writer.add_scalars("Loss", {"train": train_loss, "val": val_loss}, epoch)
                 writer.add_scalar("Validation/AUC", auc, epoch)
                 writer.add_scalar("Validation/Accuracy", acc, epoch)
-
-        plt.plot(training_loss, label="Training")
-        plt.plot(validation_loss, label="Validation")
-        plt.xlabel("Epoch")
-        plt.ylabel("Loss")
-        plt.legend()
-        plt.show()
         print('==> Evaluating ...')
         test_split, test_metrics = testing.test('test', model, test_loader, task, medmnist_dataset)
         test_auc, test_accuracy = test_metrics
@@ -68,10 +59,7 @@ def main(seed):
         else:   
             print("Results not saved in Tensorboard")
             print("\n")
-        buf = io.BytesIO()
-        plt.savefig(buf, format='png')
-        buf.seek(0)
-        image = tf.image.decode_png(buf.getvalue(), channels=n_channels)
+
         
 if __name__ == "__main__":
     main(seed=42)
