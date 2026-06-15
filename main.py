@@ -6,11 +6,12 @@ import torch.nn as nn
 import server
 
 
-def main():
+def main(seed):
+    config.set_seed(seed)
     global_model = models.get_model(config.model_name, config.data_flag)  
     global_model.train()
     info, task, n_channels, n_classes,n_train_samples = config.get_info(config.data_flag)
-
+    
     #* criterion(loss function)
     if info['task'] == "multi-label, binary-class":
         criterion = nn.BCEWithLogitsLoss()
@@ -29,23 +30,17 @@ def main():
     
     #* create clients 
     clients_list = [Client(client_id=i, train_loader=client_loader[i], global_model=global_model)for i in range(num_clients)]
-
     for rds in range(3): 
         print(f"Starting Round {rds+1}")
-
-        #* Updating clients model
-        for client in clients_list #!:
-            client.model.load_state_dict(global_model.state_dict())
-
         client_weights = []
         #* Clients training
         for client in clients_list:
             print(f"Clients {client.client_id} training...")
+            client.model.load_state_dict(global_model.state_dict())
             for epoch in range(config.num_epoch):
                 client.local_training(client.train_loader, task, criterion)
             client_weights.append(client.model.state_dict())
             print(f"Client {client.client_id} finished training")
-
         #* FedAvg 
         global_weights = server.fedavg(client_weights, normalized_weights)
         global_model.load_state_dict(global_weights)
@@ -57,4 +52,4 @@ def main():
                 
                     
 if __name__ == "__main__":
-    main()
+    main(1)

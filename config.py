@@ -1,12 +1,7 @@
-import torch.nn as nn
-import torch.optim as optim
-import json
-from types import SimpleNamespace
 from medmnist import INFO
-from torch.utils.tensorboard import SummaryWriter
-from datetime import date, datetime
-import csv
-from pathlib import Path
+import random
+import numpy as np 
+import torch
 
 #* Parameters
 #num_clients = 3 
@@ -30,3 +25,8 @@ def get_info(data_flag):
 #* Total amount of parameters in used 
 def get_n_total_params(model):
     return sum(p.numel() for p in model.parameters())
+
+def set_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)

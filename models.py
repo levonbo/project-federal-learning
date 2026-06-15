@@ -11,28 +11,28 @@ class BasicCNN(nn.Module):
 
         self.layer1 = nn.Sequential(
             nn.Conv2d(in_channels, 16, kernel_size=3),
-            nn.BatchNorm2d(16),
+            nn.GroupNorm(4,16),
             nn.ReLU())
 
         self.layer2 = nn.Sequential(
             nn.Conv2d(16, 16, kernel_size=3),
-            nn.BatchNorm2d(16),
+            nn.GroupNorm(4,16),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2))
 
         self.layer3 = nn.Sequential(
             nn.Conv2d(16, 64, kernel_size=3),
-            nn.BatchNorm2d(64),
+            nn.GroupNorm(8,64),
             nn.ReLU())
         
         self.layer4 = nn.Sequential(
             nn.Conv2d(64, 64, kernel_size=3),
-            nn.BatchNorm2d(64),
+            nn.GroupNorm(8,64),
             nn.ReLU())
 
         self.layer5 = nn.Sequential(
             nn.Conv2d(64, 64, kernel_size=3, padding=1),
-            nn.BatchNorm2d(64),
+            nn.GroupNorm(8,64),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride=2))
 
