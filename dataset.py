@@ -33,7 +33,7 @@ def get_client_loader(data_flag, size, num_clients, batch_size):
         client_loaders.append(loader)
     return client_loaders
 
-def get_val_loader(data_flag, size, batch_size):
+def get_val_loader(data_flag, size, num_clients, batch_size):
     info = INFO[data_flag]
     DataClass = getattr(medmnist, info['python_class'])
     data_transform = transforms.Compose([
@@ -41,5 +41,15 @@ def get_val_loader(data_flag, size, batch_size):
         transforms.Normalize(mean=[.5], std=[.5])
     ])
     val_dataset = DataClass(split='val', transform=data_transform, download=True, size=size)
-    val_loader = torchdata.DataLoader(dataset=val_dataset, batch_size=2*batch_size, shuffle=False)
-    return val_loader
+
+    partition_size = len(val_dataset) // num_clients
+    lengths = [partition_size] * num_clients
+    lengths[-1] += len(val_dataset) - sum(lengths)
+
+    client_val_datasets = random_split(val_dataset, lengths)
+    client_val_loaders = []
+
+    for ds in client_val_datasets:
+        loader = DataLoader(ds,batch_size=batch_size,shuffle=False)
+        client_val_loaders.append(loader)
+    return client_val_loaders

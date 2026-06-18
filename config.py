@@ -2,16 +2,16 @@ from medmnist import INFO
 import random
 import numpy as np 
 import torch
+import torch.nn as nn
 
 #* Parameters
-#num_clients = 3 
+num_clients = 3 
 #rounds = 3 
-model_name = "basiccnn"
-data_flag ="organamnist"
+#model_name = "basiccnn"
+data_flag ="retinamnist"
 num_epoch =  3
-batch_size = 16
-lr = 2.6e-3
-size = 28
+batch_size = 32
+#size = 28
 
 def get_info(data_flag): 
     #* Load info of medmnist dataset
@@ -30,3 +30,10 @@ def set_seed(seed):
     random.seed(seed)
     np.random.seed(seed)
     torch.manual_seed(seed)
+
+def get_criterion(info):
+    if info['task'] == "multi-label, binary-class":
+        return nn.BCEWithLogitsLoss()
+    else:
+        return nn.CrossEntropyLoss()
+    
