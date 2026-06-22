@@ -1,9 +1,10 @@
 import torch
 import copy
 from torch import optim
-from medmnist import Evaluator
+from metrics import getACC, getAUC
+from config import get_info, data_flag
 
-
+_,_,_, n_classes,_ = get_info(data_flag)
 
 
 def train_local(model, dataloader,criterion, task, num_epoch, lr=0.01):
@@ -33,7 +34,7 @@ def train_local(model, dataloader,criterion, task, num_epoch, lr=0.01):
         print(f"Train: Avg loss: {avg_loss:.6f}")
     return model.state_dict()
 
-def validate_model(model, val_loader, task, criterion,data_flag):
+def validate_model(model, val_loader, task, criterion):
     val_loss = 0.0
     val_samples = 0
     y_true = torch.tensor([])
@@ -55,14 +56,13 @@ def validate_model(model, val_loader, task, criterion,data_flag):
 
             val_samples+=inputs.size(0)
             y_true = torch.cat((y_true, targets), 0)
-            y_score = torch.cat((y_score, outputs), 0)
+            y_score = torch.cat((y_score, outputs), 0)    
 
-        y_score = y_score.detach().numpy()
         y_true = y_true.numpy()
+        y_score = y_score.detach().numpy()
 
-        evaluator = Evaluator(data_flag, 'val')
-        metrics = evaluator.evaluate(y_score)
-        auc, acc = metrics
+        acc = getACC(y_true, y_score, task)
+        auc = getAUC(y_true, y_score, task)
+
         val_loss /= val_samples
-        print(f"Val -> Avg loss: {val_loss:.3f} - AUC: {auc:.3f} - Accuracy: {acc:.3f} ")
-        return val_loss, auc,acc
+        return val_loss, acc, auc 
