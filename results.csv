@@ -39,3 +39,5 @@ params,train_samples,accuracy,additional information115506,546,0.859,"('breastmn
 234709,1080,0.475,"('retinamnist', 'BasicCNN', 30, 'Adam', 32)"
 234709,1080,0.512,"('retinamnist', 'BasicCNN', 30, 'Adam', 32)"
 234709,1080,0.485,"('retinamnist', 'BasicCNN', 30, 'rmsprop', 32)"
+235582,78468,0.933,"('chestmnist', 'BasicCNN', 30, 'rmsprop', 32)"
+235582,78468,0.924,"('chestmnist', 'BasicCNN', 30, 'rmsprop', 64)"

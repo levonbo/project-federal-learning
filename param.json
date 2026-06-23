@@ -1,0 +1,10 @@
+{
+  "data_flag": ["chestmnist"],
+  "NUM_EPOCHS" : 30,
+  "BATCH_SIZE" : 64  ,
+  "lr" : 0.00029,
+  "download" : true,
+  "model_name" : "BasicCNN",
+  "size" : 28,
+  "optimizer" : "rmsprop"
+}

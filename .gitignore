@@ -7,6 +7,5 @@ runs_02/
 testoptimizer/
 retina_tests/
 __pycache__/
-/param.json
 .python-version
 results.csv
