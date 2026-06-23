@@ -1,7 +1,7 @@
 {
   "data_flag": ["chestmnist"],
   "NUM_EPOCHS" : 30,
-  "BATCH_SIZE" : 64  ,
+  "BATCH_SIZE" : 16,
   "lr" : 0.00029,
   "download" : true,
   "model_name" : "BasicCNN",

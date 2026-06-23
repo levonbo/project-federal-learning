@@ -29,7 +29,7 @@ def main(seed):
         writer = None
         if record_tensorboard == True: 
             run_name = f"{uuid}_{medmnist_dataset}_{now:%Y-%m-%d__%H-%M}"
-            writer = SummaryWriter(f"retina_tests/{run_name}")
+            writer = SummaryWriter(f"overfitting_tests/{run_name}")
         #* -> Training
         print("Starting training...") 
         training_loss = []
