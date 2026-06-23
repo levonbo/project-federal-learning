@@ -31,24 +31,22 @@ def main(seed):
         val_loss_per_client = []
         acc_per_client = []
         auc_per_client = []
+        collection_train_loss_all_client = []
         # Train on each client
         for i, (tl, vl) in enumerate(zip(client_loaders, val_loader)):
             print(f"Client {i+1}")
-            weights = client.train_local(global_model,tl, criterion, task, config.num_epoch)
+            weights, avg_loss = client.train_local(global_model,tl, criterion, task, config.num_epoch)
             client_weights.append(weights)
+            collection_train_loss_all_client.append(avg_loss)
             val_loss, acc, auc = client.validate_model(global_model, vl, task, criterion)
             print(f"Val -> Avg loss: {val_loss:.3f} - AUC: {auc:.3f} - Accuracy: {acc:.3f} ")
             val_loss_per_client.append(val_loss)
             acc_per_client.append(acc)
             auc_per_client.append(auc)
-        
-        
         if writer is not None:
-            writer.add_scalar("Val/loss per round", np.average(val_loss_per_client), round)
+            writer.add_scalars("Loss", {"train": np.average(collection_train_loss_all_client), "val": np.average(val_loss_per_client)}, round)
             writer.add_scalar("Val/acc per round", np.average(acc_per_client), round)
             writer.add_scalar("Val/auc per round", np.average(auc_per_client), round)
-
-
 
         # Normalize client sizes
         total_size = sum(client_sizes)

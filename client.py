@@ -13,6 +13,7 @@ def train_local(model, dataloader,criterion, task, num_epoch, lr=0.01):
     optimizer = optim.SGD(model.parameters(), lr=lr)
     running_loss = 0.0
     num_images = 0
+    avg_loss = 0
     for _ in range(num_epoch):
         for inputs, targets in dataloader:
             optimizer.zero_grad()
@@ -32,7 +33,7 @@ def train_local(model, dataloader,criterion, task, num_epoch, lr=0.01):
             num_images += inputs.size(0)
         avg_loss = running_loss / num_images
         print(f"Train: Avg loss: {avg_loss:.6f}")
-    return model.state_dict()
+    return model.state_dict(), avg_loss
 
 def validate_model(model, val_loader, task, criterion):
     val_loss = 0.0

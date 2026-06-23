@@ -6,10 +6,10 @@ import torch.nn as nn
 
 #* Parameters
 num_clients = 3 
-rounds = 1
+rounds = 3
 #model_name = "basiccnn"
-data_flag ="chestmnist"
-num_epoch =  1
+data_flag ="retinamnist"
+num_epoch =  3
 batch_size = 32
 #size = 28
 
