@@ -3,7 +3,7 @@ from tqdm import tqdm
 
 ###*    TRAINING 
 
-def train_model(model, train_loader, optimizer, task, criterion):
+def train_model(model, train_loader, optimizer, task, criterion, regularization_type=None, lambda_reg = 0.0001):
     running_loss = 0.0
     num_images = 0
     Aveg_loss = 0
@@ -19,7 +19,11 @@ def train_model(model, train_loader, optimizer, task, criterion):
         else:
             targets = targets.view(-1).long()
             loss = criterion(outputs, targets)
-        
+
+        if regularization_type == 'L1':
+            l1 = sum(p.abs().sum() for p in model.parameters())
+            loss = loss + lambda_reg * l1
+
         loss.backward()
         optimizer.step()
         

@@ -29,19 +29,15 @@ def main(seed):
         writer = None
         if record_tensorboard == True: 
             run_name = f"{uuid}_{medmnist_dataset}_{now:%Y-%m-%d__%H-%M}"
-            writer = SummaryWriter(f"overfitting_tests/{run_name}")
+            writer = SummaryWriter(f"data_augmentation/{run_name}")
         #* -> Training
         print("Starting training...") 
-        training_loss = []
-        validation_loss = []
         for epoch in range(config.param.NUM_EPOCHS):
             print(f"Epoch {epoch+1}")
 
-            train_loss = training.train_model(model, train_loader, optimizer, task, criterion)
+            train_loss = training.train_model(model, train_loader, optimizer, task, criterion, regularization_type='L1')
             val_loss,auc,acc = validation.validate_model(model, val_loader, task, criterion, medmnist_dataset)
 
-            #training_loss.append(train_loss)
-            #validation_loss.append(val_loss)
             if writer is not None:
                 writer.add_scalars("Loss", {"train": train_loss, "val": val_loss}, epoch)
                 writer.add_scalar("Validation/AUC", auc, epoch)
@@ -62,4 +58,4 @@ def main(seed):
 
         
 if __name__ == "__main__":
-    main(seed=42)
+    main(seed=1)

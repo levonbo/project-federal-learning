@@ -1,10 +1,10 @@
 {
-  "data_flag": ["chestmnist"],
+  "data_flag": ["organamnist"],
   "NUM_EPOCHS" : 30,
-  "BATCH_SIZE" : 16,
-  "lr" : 0.00029,
+  "BATCH_SIZE" :64,
+  "lr" : 0.0026,
   "download" : true,
   "model_name" : "BasicCNN",
   "size" : 28,
-  "optimizer" : "rmsprop"
+  "optimizer" : "adam"
 }

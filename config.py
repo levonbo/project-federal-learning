@@ -37,7 +37,7 @@ def get_optimizer(optimizer,model,lr):
     if optimizer.lower() == "sgd":
         return optim.SGD(model.parameters(), lr=lr, momentum=0.9)
     elif optimizer.lower() == "adam":
-        return optim.Adam(model.parameters(), lr=lr)
+        return optim.Adam(model.parameters(), lr=lr, weight_decay=0.001)
     elif optimizer.lower() == "rmsprop":
         return optim.RMSprop(model.parameters(), lr=lr, alpha=0.99, momentum=0.9)
     elif optimizer.lower() == "adadelta":
