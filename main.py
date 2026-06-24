@@ -18,6 +18,10 @@ def main(seed):
     if record_tensorboard == True: 
         run_name = f"{"fl"}__{uuid}_{config.data_flag}_{now:%Y-%m-%d__%H-%M}"
         writer = SummaryWriter(f"fl_tests/{run_name}")
+        optimizer_name = "RMSProp"
+        lr = "0.00025"
+        model_name = "BasicCNN"
+        writer.add_text("param", f"Optimizer: {optimizer_name} | Dataset: {config.data_flag} | Epochs: {config.num_epoch} | Batch Size: {config.batch_size} | lr: {lr} | Model: {model_name}")
     config.set_seed(seed)
     info, task, n_channels, n_classes,n_train_samples = config.get_info(config.data_flag)
     global_model = BasicCNN(in_channels=n_channels, num_classes=n_classes)
