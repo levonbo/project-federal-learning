@@ -48,3 +48,7 @@ params,train_samples,accuracy,additional information115506,546,0.859,"('breastmn
 235195,34561,0.898,"('organamnist', 'BasicCNN', 30, 'adam', 64)"
 235195,34561,0.899,"('organamnist', 'BasicCNN', 30, 'adam', 64)"
 235195,34561,0.885,"('organamnist', 'BasicCNN', 30, 'adam', 64)"
+235195,34561,0.899,"('organamnist', 'BasicCNN', 30, 'adam', 64)"
+235195,34561,0.896,"('organamnist', 'BasicCNN', 30, 'adam', 64)"
+235195,34561,0.871,"('organamnist', 'BasicCNN', 30, 'adam', 64)"
+235195,34561,0.870,"('organamnist', 'BasicCNN', 30, 'adam', 64)"

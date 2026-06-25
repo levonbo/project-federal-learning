@@ -3,7 +3,7 @@ import torchvision.transforms as transforms
 import torch.utils.data as torchdata
 from medmnist import INFO
 
-def get_loader(data_flag, model_name, BATCH_SIZE, download, size, data_augmentation=True):
+def get_loader(data_flag, model_name, BATCH_SIZE, download, size, data_augmentation=False):
     info = INFO[data_flag]
     DataClass = getattr(medmnist, info['python_class'])
     print(info['python_class'], "using a", model_name)
