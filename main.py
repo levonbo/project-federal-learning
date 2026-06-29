@@ -25,8 +25,9 @@ def main(seed):
     config.set_seed(seed)
     info, task, n_channels, n_classes,n_train_samples = config.get_info(config.data_flag)
     global_model = BasicCNN(in_channels=n_channels, num_classes=n_classes)
-    client_loaders = dataset.get_client_loader(config.data_flag, 28, config.num_clients, config.batch_size)
+    client_loaders = dataset.get_client_loader(config.data_flag, 28, config.num_clients, config.batch_size, data_augmentation=True)
     val_loader = dataset.get_val_loader(config.data_flag, 28, config.num_clients, config.batch_size)
+    test_loader = dataset.get_test_loader(config.data_flag, 28, config.num_clients, config.batch_size)
     criterion = config.get_criterion(info)
     for round in range(config.rounds):
         print(f"Starting round {round+1}:…")
@@ -37,8 +38,9 @@ def main(seed):
         auc_per_client = []
         collection_train_loss_all_client = []
         # Train on each client
-        for i, (tl, vl) in enumerate(zip(client_loaders, val_loader)):
+        for i, (tl, vl, testl) in enumerate(zip(client_loaders, val_loader, test_loader)):
             print(f"Client {i+1}")
+
             weights, avg_loss = client.train_local(global_model,tl, criterion, task, config.num_epoch)
             client_weights.append(weights)
             collection_train_loss_all_client.append(avg_loss)
@@ -47,6 +49,8 @@ def main(seed):
             val_loss_per_client.append(val_loss)
             acc_per_client.append(acc)
             auc_per_client.append(auc)
+           
+
         if writer is not None:
             writer.add_scalars("Loss", {"train": np.average(collection_train_loss_all_client), "val": np.average(val_loss_per_client)}, round)
             writer.add_scalar("Val/acc per round", np.average(acc_per_client), round)
@@ -61,7 +65,11 @@ def main(seed):
         global_model.load_state_dict(global_weights)
         print("FedAvg applied…")
         print("\n")
-                    
+
+        if (round == config.rounds - 1 and writer is not None):
+            print("\n")
+            test_acc = client.test_model(global_model, testl, task, criterion) #type: ignore
+            writer.add_scalar("Test/Test to parameters", test_acc, config.get_n_total_params(global_model))    
                     
 if __name__ == "__main__":
     main(1)

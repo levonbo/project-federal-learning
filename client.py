@@ -67,3 +67,37 @@ def validate_model(model, val_loader, task, criterion):
 
         val_loss /= val_samples
         return val_loss, acc, auc 
+    
+def test_model(model, test_loader, task, criterion):
+    test_loss = 0.0
+    test_samples = 0
+    y_true = torch.tensor([])
+    y_score = torch.tensor([])
+    model.eval()
+    with torch.no_grad():
+        for inputs, targets in test_loader:
+            outputs = model(inputs)
+
+            if task == 'multi-label, binary-class':
+                targets = targets.to(torch.float32)
+                test_loss += criterion(outputs, targets).item() * inputs.size(0)
+                outputs = outputs.softmax(dim=-1)
+            else:
+                targets = targets.view(-1).long()
+                test_loss += criterion(outputs, targets).item() * inputs.size(0)
+                outputs = outputs.softmax(dim=-1)
+                targets = targets.float().reshape(len(targets), 1)
+
+            test_samples+=inputs.size(0)
+            y_true = torch.cat((y_true, targets), 0)
+            y_score = torch.cat((y_score, outputs), 0)    
+
+        y_true = y_true.numpy()
+        y_score = y_score.detach().numpy()
+
+        acc = getACC(y_true, y_score, task)
+        auc = getAUC(y_true, y_score, task)
+
+        test_loss /= test_samples
+        print(f"Test -> AUC: {auc:.3f} - Accuracy: {acc:.3f} ")
+        return acc
