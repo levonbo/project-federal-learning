@@ -1,8 +1,4 @@
-import config
-import models
-import torch 
 import copy
-from medmnist import Evaluator
 
 def fedavg(models, weights):
     global_model = copy.deepcopy(models[0])

@@ -1,20 +1,21 @@
 import torch
 import copy
-from torch import optim
 from metrics import getACC, getAUC
-from config import get_info, data_flag
-
-_,_,_, n_classes,_ = get_info(data_flag)
+import config
 
 
-def train_local(model, dataloader,criterion, task, num_epoch, lr=0.01):
+
+_,_,_, n_classes,_ = config.get_info(config.param["data_flag"])
+
+
+def train_local(model, dataloader,criterion, task, num_epoch, lr):
     model = copy.deepcopy(model) #Remember to deep copy
     model.train()
-    optimizer = optim.SGD(model.parameters(), lr=lr)
-    running_loss = 0.0
-    num_images = 0
+    optimizer = config.get_optimizer(config.param["optimizer"], model, lr)
     avg_loss = 0
     for _ in range(num_epoch):
+        running_loss = 0.0
+        num_images = 0
         for inputs, targets in dataloader:
             optimizer.zero_grad()
             outputs = model(inputs)

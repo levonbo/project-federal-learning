@@ -3,18 +3,25 @@ import random
 import numpy as np 
 import torch
 import torch.nn as nn
+from torch import optim
 
-#* Parameters
-num_clients = 3 
-rounds = 3
-#model_name = "basiccnn"
-data_flag ="retinamnist"
-num_epoch =  3
-batch_size = 32
-#size = 28
+
+param = {
+    "data_flag": "retinamnist",
+    "model_name": "basiccnn",
+    "optimizer": "sgd",
+    "num_clients": 3,
+    "rounds": 3,
+    "lr": 0.01,
+    "num_epoch": 5,
+    "batch_size": 32,
+    "size": 28,
+    "record_tensorboard": True,
+    "data_augmentation": False,
+    "non_iid": True,
+}
 
 def get_info(data_flag): 
-    #* Load info of medmnist dataset
     info = INFO[data_flag]
     task = info['task']
     n_channels = info['n_channels']
@@ -22,7 +29,7 @@ def get_info(data_flag):
     n_train_samples = info['n_samples']['train']
     return info, task, n_channels, n_classes,n_train_samples
 
-#* Total amount of parameters in used 
+#* Total amount of parameters in use
 def get_n_total_params(model):
     return sum(p.numel() for p in model.parameters())
 
@@ -36,4 +43,18 @@ def get_criterion(info):
         return nn.BCEWithLogitsLoss()
     else:
         return nn.CrossEntropyLoss()
+
+def get_optimizer(optimizer_name,model,lr):
+    if optimizer_name.lower() == "sgd":
+        return optim.SGD(model.parameters(), lr=lr, momentum=0.9)
+    elif optimizer_name.lower() == "adam":
+        return optim.Adam(model.parameters(), lr=lr, weight_decay=0.001)
+    elif optimizer_name.lower() == "rmsprop":
+        return optim.RMSprop(model.parameters(), lr=lr, alpha=0.99, momentum=0.9)
+    elif optimizer_name.lower() == "adadelta":
+        return optim.Adadelta(model.parameters(), lr=1.0, rho=0.9, eps=1e-6)
+    elif optimizer_name.lower() == "adamw":
+        return optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-4)
+    else: 
+        raise ValueError(f"This optimizer is not known")
     
