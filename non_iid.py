@@ -1,11 +1,12 @@
-import random
+import numpy as np
 
-def calculate_non_iid_distribution(num_clients):
+def calculate_distribution(num_clients, alpha, noniid=False):
     list = []
-    sum = 0
-    for n in range(num_clients-1):
-        random_num = round(random.uniform(0, 0.4), 2)
-        list.append(random_num)
-        sum += random_num
-    list.append(round(1-sum,2))
+    if noniid == True:
+        distribution = np.random.dirichlet(np.ones(num_clients) * alpha)
+        for c in distribution: 
+            list.append(round(float(c), 4))
+    else:
+        for c in range(num_clients):
+            list.append(round(1/num_clients,4))
     return list

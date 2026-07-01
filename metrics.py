@@ -20,7 +20,6 @@ def getACC(y_true, y_score, task, threshold=0.5):
         ret = accuracy_score(y_true, y_score > threshold)
     else:
         ret = accuracy_score(y_true, np.argmax(y_score, axis=-1))
-
     return ret
 
 
@@ -57,5 +56,4 @@ def getAUC(y_true, y_score, task):
             auc += roc_auc_score(y_true_binary, y_score_binary)
             valid += 1 
         ret = auc / valid
-
     return ret

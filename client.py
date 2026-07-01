@@ -9,7 +9,7 @@ _,_,_, n_classes,_ = config.get_info(config.param["data_flag"])
 
 
 def train_local(model, dataloader,criterion, task, num_epoch, lr):
-    model = copy.deepcopy(model) #Remember to deep copy
+    model = copy.deepcopy(model)
     model.train()
     optimizer = config.get_optimizer(config.param["optimizer"], model, lr)
     avg_loss = 0

@@ -4,7 +4,7 @@ import torch.utils.data as torchdata
 from medmnist import INFO
 from torch.utils.data import random_split, DataLoader
 import config
-from non_iid import calculate_non_iid_distribution
+from non_iid import calculate_distribution
 
 def get_client_loader(data_flag, size, num_clients, batch_size):
     info = INFO[data_flag]
@@ -40,37 +40,20 @@ def get_client_loader(data_flag, size, num_clients, batch_size):
         train_dataset = torchdata.ConcatDataset([train_dataset_original, train_dataset_augmented])
     else:
         train_dataset = DataClass(split='train', transform=data_transform, download=True, size=config.param["size"], mmap_mode='r') #224
-    if config.param["non_iid"]==False:
-        # Split dataset
-        partition_size = len(train_dataset) // num_clients
+   
+    list_distribution = calculate_distribution(num_clients, alpha=10.0, noniid=config.param["non_iid"])
 
-        lengths = [partition_size] * num_clients
-        lengths[-1] += len(train_dataset) - sum(lengths)
+    total = len(train_dataset)
+    lengths = [int(p * total) for p in list_distribution]
+    lengths[-1] += total - sum(lengths)
+    client_datasets = random_split(train_dataset, lengths)
 
-        client_datasets = random_split(train_dataset, lengths)
+    client_loaders = []
+    for ds in client_datasets:
+        loader = DataLoader(ds, batch_size=batch_size, shuffle=True)
+        client_loaders.append(loader)
 
-        # Create one DataLoader per client
-        client_loaders = []
-
-        for ds in client_datasets:
-            loader = DataLoader(ds,batch_size=batch_size,shuffle=True)
-            client_loaders.append(loader)
-    else:
-        list_distribution = calculate_non_iid_distribution(num_clients)
-
-        total = len(train_dataset)
-        lengths = [int(p * total) for p in list_distribution]
-        print(lengths)
-        lengths[-1] += total - sum(lengths)
-
-        client_datasets = random_split(train_dataset, lengths)
-
-        client_loaders = []
-        for ds in client_datasets:
-            loader = DataLoader(ds, batch_size=batch_size, shuffle=True)
-            client_loaders.append(loader)
-
-    return client_loaders
+    return client_loaders, lengths
 
 def get_val_loader(data_flag, size, num_clients, batch_size):
     info = INFO[data_flag]

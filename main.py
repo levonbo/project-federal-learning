@@ -22,10 +22,11 @@ def main(seed):
     config.set_seed(seed)
     info, task, n_channels, n_classes,n_train_samples = config.get_info(config.param["data_flag"])
     global_model = BasicCNN(in_channels=n_channels, num_classes=n_classes)
-    client_loaders = dataset.get_client_loader(config.param["data_flag"], 28, config.param["num_clients"], config.param["batch_size"])
+    client_loaders, distribution = dataset.get_client_loader(config.param["data_flag"], 28, config.param["num_clients"], config.param["batch_size"])
     val_loader = dataset.get_val_loader(config.param["data_flag"], 28, config.param["num_clients"], config.param["batch_size"])
     test_loader = dataset.get_test_loader(config.param["data_flag"], 28, config.param["num_clients"], config.param["batch_size"])
     criterion = config.get_criterion(info)
+    config.print_intro(config.param["data_flag"],config.param["model_name"], uuid, config.param["num_clients"], distribution)
     for round in range(config.param["rounds"]):
         print(f"Starting round {round+1}:…")
         client_weights = []

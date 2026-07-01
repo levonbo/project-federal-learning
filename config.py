@@ -10,14 +10,14 @@ param = {
     "data_flag": "retinamnist",
     "model_name": "basiccnn",
     "optimizer": "sgd",
-    "num_clients": 3,
+    "num_clients": 4,
     "rounds": 3,
     "lr": 0.01,
     "num_epoch": 5,
     "batch_size": 32,
     "size": 28,
     "record_tensorboard": True,
-    "data_augmentation": False,
+    "data_augmentation": True,
     "non_iid": True,
 }
 
@@ -58,3 +58,11 @@ def get_optimizer(optimizer_name,model,lr):
     else: 
         raise ValueError(f"This optimizer is not known")
     
+def print_intro(dataset, model, run_id, num_clients, distribution):
+    print("=" * 50)
+    print(f" Run UUID             : {run_id}")
+    print(f" Clients              : {num_clients}")
+    print(f" Sample Distribution  : {distribution}")
+    print(f" Dataset              : {dataset}")
+    print(f" Model                : {model}")
+    print("=" * 50)
