@@ -8,8 +8,8 @@ import config
 _,_,_, n_classes,_ = config.get_info(config.param["data_flag"])
 
 
-def train_local(model, dataloader,criterion, task, num_epoch, lr):
-    model = copy.deepcopy(model)
+def train_local(model, dataloader,criterion, task, num_epoch, lr, device):
+    model = copy.deepcopy(model).to(device)
     model.train()
     optimizer = config.get_optimizer(config.param["optimizer"], model, lr)
     avg_loss = 0
@@ -17,6 +17,7 @@ def train_local(model, dataloader,criterion, task, num_epoch, lr):
         running_loss = 0.0
         num_images = 0
         for inputs, targets in dataloader:
+            inputs, targets = inputs.to(device), targets.to(device)
             optimizer.zero_grad()
             outputs = model(inputs)
 
@@ -36,14 +37,16 @@ def train_local(model, dataloader,criterion, task, num_epoch, lr):
         print(f"Train: Avg loss: {avg_loss:.6f}")
     return model.state_dict(), avg_loss
 
-def validate_model(model, val_loader, task, criterion):
+def validate_model(model, val_loader, task, criterion, device):
     val_loss = 0.0
     val_samples = 0
-    y_true = torch.tensor([])
-    y_score = torch.tensor([])
+    y_true = torch.empty(0, device=device)
+    y_score = torch.empty(0, device=device)
+    model = model.to(device)
     model.eval()
     with torch.no_grad():
         for inputs, targets in val_loader:
+            inputs, targets = inputs.to(device), targets.to(device)
             outputs = model(inputs)
 
             if task == 'multi-label, binary-class':
@@ -60,8 +63,8 @@ def validate_model(model, val_loader, task, criterion):
             y_true = torch.cat((y_true, targets), 0)
             y_score = torch.cat((y_score, outputs), 0)    
 
-        y_true = y_true.numpy()
-        y_score = y_score.detach().numpy()
+        y_true = y_true.detach().cpu().numpy()
+        y_score = y_score.detach().cpu().numpy()
 
         acc = getACC(y_true, y_score, task)
         auc = getAUC(y_true, y_score, task)
@@ -69,14 +72,16 @@ def validate_model(model, val_loader, task, criterion):
         val_loss /= val_samples
         return val_loss, acc, auc 
     
-def test_model(model, test_loader, task, criterion):
+def test_model(model, test_loader, task, criterion, device):
     test_loss = 0.0
     test_samples = 0
-    y_true = torch.tensor([])
-    y_score = torch.tensor([])
+    y_true = torch.empty(0, device=device)
+    y_score = torch.empty(0, device=device)
+    model = model.to(device)
     model.eval()
     with torch.no_grad():
         for inputs, targets in test_loader:
+            inputs, targets = inputs.to(device), targets.to(device)
             outputs = model(inputs)
 
             if task == 'multi-label, binary-class':
@@ -93,8 +98,8 @@ def test_model(model, test_loader, task, criterion):
             y_true = torch.cat((y_true, targets), 0)
             y_score = torch.cat((y_score, outputs), 0)    
 
-        y_true = y_true.numpy()
-        y_score = y_score.detach().numpy()
+        y_true = y_true.detach().cpu().numpy()
+        y_score = y_score.detach().cpu().numpy()
 
         acc = getACC(y_true, y_score, task)
         auc = getAUC(y_true, y_score, task)

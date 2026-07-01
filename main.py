@@ -8,17 +8,20 @@ import random
 from torch.utils.tensorboard import SummaryWriter
 import numpy as np 
 import copy
+import torch
 
 
 now = datetime.now()
 uuid = random.randint(0,999)
 
 def main(seed):
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(device)
     writer = None
     if config.param["record_tensorboard"] == True: 
         run_name = f"{"fl"}__{uuid}_{config.param["data_flag"]}_{now:%Y-%m-%d__%H-%M}"
         writer = SummaryWriter(f"fl_tests_data_augmentation/{run_name}")
-        writer.add_text("param", f"Optimizer: {config.param["optimizer"]} | Dataset: {config.param["data_flag"]} | Epochs: {config.param["num_epoch"]} | Batch Size: {config.param["batch_size"]} | lr: {config.param["lr"]} | Model: {config.param["model_name"]} | Data augmentation: {config.param["data_augmentation"]} ")
+        writer.add_text("param", f"Optimizer: {config.param["optimizer"]} | Epochs: {config.param["num_epoch"]} | Batch Size: {config.param["batch_size"]} | lr: {config.param["lr"]} | Model: {config.param["model_name"]} | Data augmentation: {config.param["data_augmentation"]} | Non-iid: {config.param["non_iid"]} ")
     config.set_seed(seed)
     info, task, n_channels, n_classes,n_train_samples = config.get_info(config.param["data_flag"])
     global_model = BasicCNN(in_channels=n_channels, num_classes=n_classes)
@@ -38,14 +41,14 @@ def main(seed):
         # Train on each client
         for i, (tl, vl, testl) in enumerate(zip(client_loaders, val_loader, test_loader)):
             print(f"Client {i+1}")
-            weights, avg_loss = client.train_local(global_model,tl, criterion, task, config.param["num_epoch"], config.param["lr"])
+            weights, avg_loss = client.train_local(global_model,tl, criterion, task, config.param["num_epoch"], config.param["lr"], device)
             client_weights.append(weights)
             collection_train_loss_all_client.append(avg_loss)
 
             local_model = copy.deepcopy(global_model)
             local_model.load_state_dict(weights)
 
-            val_loss, acc, auc = client.validate_model(local_model, vl, task, criterion)
+            val_loss, acc, auc = client.validate_model(local_model, vl, task, criterion, device)
             print(f"Val -> Avg loss: {val_loss:.3f} - AUC: {auc:.3f} - Accuracy: {acc:.3f} ")
             val_loss_per_client.append(val_loss)
             acc_per_client.append(acc)
@@ -69,7 +72,7 @@ def main(seed):
 
         if (round == config.param["rounds"] - 1 and writer is not None):
             print("\n")
-            test_acc = client.test_model(global_model, testl, task, criterion) #type: ignore
+            test_acc = client.test_model(global_model, testl, task, criterion, device)#type: ignore
             writer.add_scalar("Test/Test to parameters", test_acc, config.get_n_total_params(global_model))    
                     
 if __name__ == "__main__":
