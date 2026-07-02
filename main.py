@@ -20,8 +20,8 @@ def main(seed):
     writer = None
     if config.param["record_tensorboard"] == True: 
         run_name = f"{"fl"}__{uuid}_{config.param["data_flag"]}_{now:%Y-%m-%d__%H-%M}"
-        writer = SummaryWriter(f"fl_tests_data_augmentation/{run_name}")
-        writer.add_text("param", f"Optimizer: {config.param["optimizer"]} | Epochs: {config.param["num_epoch"]} | Batch Size: {config.param["batch_size"]} | lr: {config.param["lr"]} | Model: {config.param["model_name"]} | Data augmentation: {config.param["data_augmentation"]} | Non-iid: {config.param["non_iid"]} ")
+        writer = SummaryWriter(f"fl_first_tests/{run_name}")
+        writer.add_text("param", f"Optimizer: {config.param["optimizer"]} | Epochs: {config.param["num_epoch"]} | Batch Size: {config.param["batch_size"]} | lr: {config.param["lr"]} | Model: {config.param["model_name"]} | Data augmentation: {config.param["data_augmentation"]} | Non-iid: {config.param["non_iid"]} | Num Clients: {config.param["num_clients"]} ")
     config.set_seed(seed)
     info, task, n_channels, n_classes,n_train_samples = config.get_info(config.param["data_flag"])
     global_model = BasicCNN(in_channels=n_channels, num_classes=n_classes)
@@ -76,4 +76,4 @@ def main(seed):
             writer.add_scalar("Test/Test to parameters", test_acc, config.get_n_total_params(global_model))    
                     
 if __name__ == "__main__":
-    main(1)
+        main(1)

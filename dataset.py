@@ -19,17 +19,23 @@ def get_client_loader(data_flag, size, num_clients, batch_size):
         data_augmented = transforms.Compose([
             transforms.RandomHorizontalFlip(p=0.5),
             transforms.ColorJitter(contrast=0.8),
-            transforms.RandomCrop(size=(size-(int(size*0.4)),size-(int(size*0.4)))),
+            transforms.RandomCrop(28,padding=12),
             transforms.ToTensor(),
             transforms.Normalize(mean=[.5], std=[.5])
         ])
     else:
-        data_augmented = transforms.Compose([
+        """ data_augmented = transforms.Compose([
             transforms.RandomVerticalFlip(p=0.5),
             transforms.RandomRotation(10),
             transforms.RandomGrayscale(p=0.1),
             transforms.ToTensor(),
-            transforms.Normalize(mean=[.5,.5,.5], std=[.5,.5,.5])
+            transforms.Normalize(mean=[.5,.5,.5], std=[.5,.5,.5])"""
+        data_augmented = transforms.Compose([
+            transforms.RandomHorizontalFlip(),
+            transforms.RandomRotation(10),
+            transforms.RandomCrop(28,padding=12),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[.5], std=[.5])
         ])
 
     print("Loading MedMNIST Data ...")

@@ -7,18 +7,18 @@ from torch import optim
 
 
 param = {
-    "data_flag": "retinamnist",
+    "data_flag": "tissuemnist",
     "model_name": "basiccnn",
     "optimizer": "sgd",
-    "num_clients": 4,
-    "rounds": 3,
+    "num_clients": 3,
+    "rounds": 20,
     "lr": 0.01,
     "num_epoch": 5,
     "batch_size": 32,
     "size": 28,
     "record_tensorboard": True,
     "data_augmentation": True,
-    "non_iid": True,
+    "non_iid": False,
 }
 
 def get_info(data_flag): 
