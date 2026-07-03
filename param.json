@@ -1,5 +1,5 @@
 {
-  "data_flag": ["organamnist"],
+  "data_flag": ["pneumoniamnist"],
   "NUM_EPOCHS" : 30,
   "BATCH_SIZE" :64,
   "lr" : 0.0026,

@@ -6,7 +6,7 @@ from medmnist import INFO
 def get_loader(data_flag, model_name, BATCH_SIZE, download, size, data_augmentation=False):
     info = INFO[data_flag]
     DataClass = getattr(medmnist, info['python_class'])
-    print(info['python_class'], "using a", model_name)
+    #print(info['python_class'], "using a", model_name)
     ###*    load the data from medMNIST and encapsulate into dataloader form 
 
     data_transform = transforms.Compose([
@@ -21,7 +21,7 @@ def get_loader(data_flag, model_name, BATCH_SIZE, download, size, data_augmentat
         transforms.ToTensor(),
         transforms.Normalize(mean=[.5], std=[.5])
     ])
-    print("Loading MedMNIST Data ...")
+    #print("Loading MedMNIST Data ...")
     ###* Dataset 
     if data_augmentation:
         train_dataset_original = DataClass(split='train', transform=data_transform, download=download, size=size, mmap_mode='r') #224

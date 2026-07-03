@@ -3,27 +3,32 @@ import torch.optim as optim
 import torch
 import torch.nn as nn
 import models
-import config
+#import config
 import dataset
 import numpy as np
+from medmnist import INFO,Evaluator
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
 
 def objective(trial):
-    optimizer_name = trial.suggest_categorical("Optimizer", ["RMSprop"])
-    learning_rate = trial.suggest_float('lr', 0.0001,0.01, log=True)
-    BATCH_SIZE = trial.suggest_categorical('Batch Size', [16, 32, 64, 128])
+    optimizer_name = trial.suggest_categorical("Optimizer", ["SGD"])
+    learning_rate = trial.suggest_float('lr', 0.0001, 0.1, log=True)
+    momentum = trial.suggest_float('momentum', 0.5,0.99, log=False)
+    #alpha = trial.suggest_float('alpha', 0.90,0.99, log=False)
+    BATCH_SIZE = trial.suggest_categorical('Batch Size', [16, 32, 64])
 
-    mnist_datasets = ["pathmnist", "chestmnist", "dermamnist", "octmnist", "pneumoniamnist", "retinamnist", "breastmnist", "bloodmnist", "organamnist", "organcmnist", " organsmnist"]
-    vall_loss_all = []
+    mnist_datasets = ["pneumoniamnist"]
+    acc_all = []
     for data_flag in mnist_datasets:
-        _, task, _, _,_ = config.get_info(data_flag)
-        model = models.get_model(config.param.model_name, data_flag).to(device)
+        #* Load info of medmnist dataset
+        info = INFO[data_flag]
+        task = info['task']
+        model = models.get_model("basiccnn", data_flag).to(device)
 
-        optimizer = getattr(optim, optimizer_name)(model.parameters(), lr=learning_rate)
+        optimizer = getattr(optim, optimizer_name)(model.parameters(), lr=learning_rate, momentum=momentum)
 
-        train_loader, validation_loader, _ = dataset.get_loader(data_flag, config.param.model_name, BATCH_SIZE, config.param.download, config.param.size)
+        train_loader, validation_loader, _ = dataset.get_loader(data_flag, "basiccnn", BATCH_SIZE, True, 28)
 
         if task == "multi-label, binary-class":
             criterion = nn.BCEWithLogitsLoss()
@@ -51,7 +56,8 @@ def objective(trial):
             val_loss = 0
             val_samples = 0.0
             model.eval()
-            y_score = torch.tensor([])
+            y_score = torch.empty(0,device=device)
+            y_true = torch.empty(0,device=device)
             with torch.no_grad():
                 for inputs, targets in validation_loader:
                     inputs,targets = inputs.to(device),targets.to(device)
@@ -66,12 +72,16 @@ def objective(trial):
                         outputs = outputs.softmax(dim=-1)
                         targets = targets.float().reshape(len(targets), 1)
 
-                    y_score = torch.cat((y_score, outputs.cpu()), 0)
+                    y_true = torch.cat((y_true, targets), 0)
+                    y_score = torch.cat((y_score, outputs), 0)
                     val_samples += inputs.size(0)
+                evaluator = Evaluator(data_flag, "val")
+                metrics = evaluator.evaluate(y_score)
+                auc, acc = metrics
                 val_loss /= val_samples
-        vall_loss_all.append(val_loss) #type: ignore
-    return np.mean(vall_loss_all)
+        acc_all.append(acc) #type: ignore
+    return np.mean(acc_all)
 
-study = optuna.create_study(direction='minimize')
-study.optimize(objective, n_trials=1) # type: ignore
+study = optuna.create_study(direction='maximize')
+study.optimize(objective, n_trials=40) # type: ignore
 print("Best Hyperparameters:", study.best_params)
