@@ -1,11 +1,6 @@
 medmnist-venv/
 yaml-testing.py
 .vscode/
-runs/
-runs_01/
-runs_02/
-testoptimizer/
-retina_tests/
 __pycache__/
 .python-version
 results.csv
