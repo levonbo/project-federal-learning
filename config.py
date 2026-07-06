@@ -7,18 +7,20 @@ from torch import optim
 
 
 param = {
-    "data_flag": "tissuemnist",
+    "data_flag": "organcmnist",
     "model_name": "basiccnn",
-    "optimizer": "sgd",
+    "optimizer": "adam",
     "num_clients": 3,
-    "rounds": 20,
-    "lr": 0.01,
+    "rounds": 40,
+    "lr": 0.001,
     "num_epoch": 5,
-    "batch_size": 32,
+    "batch_size": 16,
     "size": 28,
     "record_tensorboard": True,
     "data_augmentation": True,
     "non_iid": False,
+    "patience": 10,
+    "delta": 0
 }
 
 def get_info(data_flag): 
@@ -52,9 +54,9 @@ def get_optimizer(optimizer_name,model,lr):
     if optimizer_name.lower() == "sgd":
         return optim.SGD(model.parameters(), lr=lr, momentum=0.9)
     elif optimizer_name.lower() == "adam":
-        return optim.Adam(model.parameters(), lr=lr, weight_decay=0.001)
+        return optim.Adam(model.parameters(), lr=lr, weight_decay=0)
     elif optimizer_name.lower() == "rmsprop":
-        return optim.RMSprop(model.parameters(), lr=lr, alpha=0.99, momentum=0.9)
+        return optim.RMSprop(model.parameters(), lr=lr, alpha=0.97)
     elif optimizer_name.lower() == "adadelta":
         return optim.Adadelta(model.parameters(), lr=1.0, rho=0.9, eps=1e-6)
     elif optimizer_name.lower() == "adamw":

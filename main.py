@@ -20,7 +20,7 @@ def main(seed):
     writer = None
     if config.param["record_tensorboard"] == True: 
         run_name = f"{"fl"}__{uuid}_{config.param["data_flag"]}_{now:%Y-%m-%d__%H-%M}"
-        writer = SummaryWriter(f"fl_first_tests/{run_name}")
+        writer = SummaryWriter(f"fl_basiccnn_tests/{run_name}")
         writer.add_text("param", f"Optimizer: {config.param["optimizer"]} | Epochs: {config.param["num_epoch"]} | Batch Size: {config.param["batch_size"]} | lr: {config.param["lr"]} | Model: {config.param["model_name"]} | Data augmentation: {config.param["data_augmentation"]} | Non-iid: {config.param["non_iid"]} | Num Clients: {config.param["num_clients"]} ")
     config.set_seed(seed)
     info, task, n_channels, n_classes,n_train_samples = config.get_info(config.param["data_flag"])
@@ -30,6 +30,9 @@ def main(seed):
     test_loader = dataset.get_test_loader(config.param["data_flag"], 28, config.param["num_clients"], config.param["batch_size"])
     criterion = config.get_criterion(info)
     config.print_intro(config.param["data_flag"],config.param["model_name"], uuid, config.param["num_clients"], distribution)
+    best_loss = None
+    no_improvement_count = 0
+    best_model = global_model
     for round in range(config.param["rounds"]):
         print(f"Starting round {round+1}:…")
         client_weights = []
@@ -68,12 +71,25 @@ def main(seed):
         global_weights = server.fedavg(client_weights, normalized_weights)
         global_model.load_state_dict(global_weights)
         print("FedAvg applied…")
-        print("\n")
 
-        if (round == config.param["rounds"] - 1 and writer is not None):
-            print("\n")
-            test_acc = client.test_model(global_model, testl, task, criterion, device)#type: ignore
-            writer.add_scalar("Test/Test to parameters", test_acc, config.get_n_total_params(global_model))    
-                    
+        #* Early stopping 
+        last_val_loss = np.average(val_loss_per_client)
+        if best_loss is None or last_val_loss < best_loss+config.param["delta"]:
+            best_loss = last_val_loss
+            best_model = global_model
+            no_improvement_count = 0
+        else:
+            no_improvement_count += 1
+            if no_improvement_count >= config.param["patience"]:
+                print("Stopping early due to exceeding patience limit")
+                break
+        
+    if writer is not None:
+        print("\n")
+        test_acc = client.test_model(best_model, test_loader[0], task, criterion, device)#type: ignore
+        writer.add_scalar("Test/Test to parameters", test_acc, config.get_n_total_params(global_model))  
+    else: 
+        test_acc = client.test_model(global_model, test_loader[0], task, criterion, device)#type: ignore
+       
 if __name__ == "__main__":
         main(1)
