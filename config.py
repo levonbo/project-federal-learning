@@ -8,10 +8,10 @@ from torch import optim
 
 param = {
     "data_flag": "organcmnist",
-    "model_name": "basiccnn",
+    "model_name": "standardcnn",
     "optimizer": "adam",
     "num_clients": 3,
-    "rounds": 40,
+    "rounds": 25,
     "lr": 0.001,
     "num_epoch": 5,
     "batch_size": 16,
@@ -19,7 +19,7 @@ param = {
     "record_tensorboard": True,
     "data_augmentation": True,
     "non_iid": False,
-    "patience": 10,
+    "patience": 8,
     "delta": 0
 }
 

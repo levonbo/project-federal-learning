@@ -106,4 +106,4 @@ def test_model(model, test_loader, task, criterion, device):
 
         test_loss /= test_samples
         print(f"Test -> AUC: {auc:.3f} - Accuracy: {acc:.3f} ")
-        return acc
+        return acc, auc
