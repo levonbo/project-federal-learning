@@ -7,14 +7,14 @@ from torch import optim
 
 
 param = {
-    "data_flag": "organcmnist",
-    "model_name": "standardcnn",
+    "data_flag": "pneumoniamnist",
+    "model_name": "cnn400",
     "optimizer": "adam",
     "num_clients": 3,
     "rounds": 25,
-    "lr": 0.001,
+    "lr": 0.0001,
     "num_epoch": 5,
-    "batch_size": 16,
+    "batch_size": 32,
     "size": 28,
     "record_tensorboard": True,
     "data_augmentation": True,

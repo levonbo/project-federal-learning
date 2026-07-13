@@ -5,7 +5,7 @@ import torch
 import config
 from torchvision.models import resnet18
 
-#* StandardCNN -> 1.000.000 parameters
+#* StandardCNN -> 800.000 parameters
 class StandardCNN(nn.Module):
     def __init__(self, in_channels, num_classes):
         super(StandardCNN, self).__init__()
@@ -48,6 +48,181 @@ class StandardCNN(nn.Module):
         x = self.fc(x)
         return x
 
+#* CNN400 -> 400.000 parameters
+class CNN400(nn.Module):
+    def __init__(self, in_channels, num_classes):
+        super(CNN400, self).__init__()
+        self.layer1 = nn.Sequential(
+            nn.Conv2d(in_channels, 32, kernel_size=3),
+            nn.GroupNorm(8, 32),
+            nn.ReLU())
+        self.layer2 = nn.Sequential(
+            nn.Conv2d(32, 32, kernel_size=3),
+            nn.GroupNorm(8, 32),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2))
+        self.layer3 = nn.Sequential(
+            nn.Conv2d(32, 64, kernel_size=3),
+            nn.GroupNorm(8, 64),
+            nn.ReLU())
+        self.layer4 = nn.Sequential(
+            nn.Conv2d(64, 128, kernel_size=3),
+            nn.GroupNorm(8, 128),
+            nn.ReLU())
+        self.layer5 = nn.Sequential(
+            nn.Conv2d(128, 128, kernel_size=3, padding=1),
+            nn.GroupNorm(8, 128),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2))
+        
+        self.pool = nn.AdaptiveAvgPool2d((2, 2))
+
+        self.fc = nn.Sequential(
+            nn.Linear(512, 256),
+            nn.ReLU(),
+            nn.Linear(256, 128),
+            nn.ReLU(),
+            nn.Linear(128, num_classes))
+
+    def forward(self, x):
+        x = self.layer1(x)
+        x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.layer4(x)
+        x = self.layer5(x)
+        x = self.pool(x)
+        x = x.view(x.size(0), -1)
+        x = self.fc(x)
+        return x
+
+class CNN200(nn.Module):
+    def __init__(self, in_channels, num_classes):
+        super(CNN200, self).__init__()
+        self.layer1 = nn.Sequential(
+            nn.Conv2d(in_channels, 16, kernel_size=3),
+            nn.GroupNorm(4, 16),
+            nn.ReLU())
+        self.layer2 = nn.Sequential(
+            nn.Conv2d(16, 32, kernel_size=3),
+            nn.GroupNorm(8, 32),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2))
+        self.layer3 = nn.Sequential(
+            nn.Conv2d(32, 64, kernel_size=3),
+            nn.GroupNorm(8, 64),
+            nn.ReLU())
+        self.layer4 = nn.Sequential(
+            nn.Conv2d(64, 64, kernel_size=3),
+            nn.GroupNorm(8, 64),
+            nn.ReLU())
+        self.layer5 = nn.Sequential(
+            nn.Conv2d(64, 128, kernel_size=3, padding=1),
+            nn.GroupNorm(8, 128),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2))
+
+        self.pool = nn.AdaptiveAvgPool2d((2, 2))  # -> 128*2*2 = 512
+
+        self.fc = nn.Sequential(
+            nn.Linear(128 * 2 * 2, 128),
+            nn.ReLU(),
+            nn.Linear(128, 64),
+            nn.ReLU(),
+            nn.Linear(64, num_classes))
+
+    def forward(self, x):
+        x = self.layer1(x)
+        x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.layer4(x)
+        x = self.layer5(x)
+        x = self.pool(x)
+        x = x.view(x.size(0), -1)
+        x = self.fc(x)
+        return x
+
+class CNN100(nn.Module):
+    def __init__(self, in_channels, num_classes):
+        super(CNN100, self).__init__()
+        self.layer1 = nn.Sequential(
+            nn.Conv2d(in_channels, 16, kernel_size=3),
+            nn.GroupNorm(4, 16),
+            nn.ReLU())
+        self.layer2 = nn.Sequential(
+            nn.Conv2d(16, 32, kernel_size=3),
+            nn.GroupNorm(8, 32),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2))
+        self.layer3 = nn.Sequential(
+            nn.Conv2d(32, 64, kernel_size=3),
+            nn.GroupNorm(8, 64),
+            nn.ReLU())
+        self.layer4 = nn.Sequential(
+            nn.Conv2d(64, 64, kernel_size=3),
+            nn.GroupNorm(8, 64),
+            nn.ReLU())
+
+        # layer5 removed — AdaptiveAvgPool2d now does the final
+        # spatial reduction that layer5's MaxPool used to do
+        self.pool = nn.AdaptiveAvgPool2d((2, 2))  # -> 64*2*2 = 256
+
+        self.fc = nn.Sequential(
+            nn.Linear(64 * 2 * 2, 128),
+            nn.ReLU(),
+            nn.Linear(128, 64),
+            nn.ReLU(),
+            nn.Linear(64, num_classes))
+
+    def forward(self, x):
+        x = self.layer1(x)
+        x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.layer4(x)
+        x = self.pool(x)
+        x = x.view(x.size(0), -1)
+        x = self.fc(x)
+        return x
+
+class CNN50(nn.Module):
+    def __init__(self, in_channels, num_classes):
+        super(CNN50, self).__init__()
+        self.layer1 = nn.Sequential(
+            nn.Conv2d(in_channels, 8, kernel_size=3),
+            nn.GroupNorm(4, 8),
+            nn.ReLU())
+        self.layer2 = nn.Sequential(
+            nn.Conv2d(8, 16, kernel_size=3),
+            nn.GroupNorm(8, 16),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2))
+        self.layer3 = nn.Sequential(
+            nn.Conv2d(16, 32, kernel_size=3),
+            nn.GroupNorm(8, 32),
+            nn.ReLU())
+        self.layer4 = nn.Sequential(
+            nn.Conv2d(32, 64, kernel_size=3),
+            nn.GroupNorm(8, 64),
+            nn.ReLU())
+
+        self.pool = nn.AdaptiveAvgPool2d((2, 2))  # -> 64*2*2 = 256
+
+        self.fc = nn.Sequential(
+            nn.Linear(64 * 2 * 2, 80),
+            nn.ReLU(),
+            nn.Linear(80, 40),
+            nn.ReLU(),
+            nn.Linear(40, num_classes))
+
+    def forward(self, x):
+        x = self.layer1(x)
+        x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.layer4(x)
+        x = self.pool(x)
+        x = x.view(x.size(0), -1)
+        x = self.fc(x)
+        return x
+        
 #* BasicCNN -> 230.000 parameters
 class BasicCNN(nn.Module):
     def __init__(self, in_channels, num_classes):
@@ -177,5 +352,7 @@ def get_model(model_name, data_flag):
         return SmallCNN(in_channels=n_channels, num_classes=n_classes)
     elif model_name.lower()=="standardcnn":
         return StandardCNN(in_channels=n_channels, num_classes=n_classes)
+    elif model_name.lower()=="cnn400":
+        return CNN400(in_channels=n_channels, num_classes=n_classes)
     else:
         raise Exception("Sorry, this model is not known")
