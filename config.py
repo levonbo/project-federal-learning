@@ -7,12 +7,12 @@ from torch import optim
 
 
 param = {
-    "data_flag": "pneumoniamnist",
-    "model_name": "cnn400",
+    "data_flag": "pathmnist",
+    "model_name": "cnn1",
     "optimizer": "adam",
     "num_clients": 3,
     "rounds": 25,
-    "lr": 0.0001,
+    "lr": 0.001,
     "num_epoch": 5,
     "batch_size": 32,
     "size": 28,

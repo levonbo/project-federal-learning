@@ -222,7 +222,72 @@ class CNN50(nn.Module):
         x = x.view(x.size(0), -1)
         x = self.fc(x)
         return x
-        
+
+class CNN4(nn.Module):
+    def __init__(self, in_channels, num_classes):
+        super(CNN4, self).__init__()
+        self.layer1 = nn.Sequential(
+            nn.Conv2d(in_channels, 4, kernel_size=3),
+            nn.GroupNorm(2, 4),
+            nn.ReLU())
+        self.layer2 = nn.Sequential(
+            nn.Conv2d(4, 8, kernel_size=3),
+            nn.GroupNorm(4, 8),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2))
+        self.layer3 = nn.Sequential(
+            nn.Conv2d(8, 16, kernel_size=3),
+            nn.GroupNorm(4, 16),
+            nn.ReLU())
+
+        self.pool = nn.AdaptiveAvgPool2d((2, 2))
+
+        self.fc = nn.Sequential(
+            nn.Linear(16 * 2 * 2, 32),
+            nn.ReLU(),
+            nn.Linear(32, 16),
+            nn.ReLU(),
+            nn.Linear(16, num_classes))
+
+    def forward(self, x):
+        x = self.layer1(x)
+        x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.pool(x)
+        x = x.view(x.size(0), -1)
+        x = self.fc(x)
+        return x
+
+class CNN1(nn.Module):
+    def __init__(self, in_channels, num_classes):
+        super(CNN1, self).__init__()
+        self.layer1 = nn.Sequential(
+            nn.Conv2d(in_channels, 4, kernel_size=3),
+            nn.GroupNorm(2, 4),
+            nn.ReLU())
+        self.layer2 = nn.Sequential(
+            nn.Conv2d(4, 8, kernel_size=3),
+            nn.GroupNorm(4, 8),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2))
+
+        self.pool = nn.AvgPool2d(kernel_size=6, stride=6) 
+
+        self.fc = nn.Sequential(
+            nn.Linear(8 * 2 * 2, 16),
+            nn.ReLU(),
+            nn.Linear(16, 8),
+            nn.ReLU(),
+            nn.Linear(8, num_classes))
+
+    def forward(self, x):
+        x = self.layer1(x)
+        x = self.layer2(x)
+        x = self.pool(x)
+        x = x.view(x.size(0), -1)
+        x = self.fc(x)
+        return x
+
 #* BasicCNN -> 230.000 parameters
 class BasicCNN(nn.Module):
     def __init__(self, in_channels, num_classes):
@@ -354,5 +419,13 @@ def get_model(model_name, data_flag):
         return StandardCNN(in_channels=n_channels, num_classes=n_classes)
     elif model_name.lower()=="cnn400":
         return CNN400(in_channels=n_channels, num_classes=n_classes)
+    elif model_name.lower()=="cnn200":
+        return CNN200(in_channels=n_channels, num_classes=n_classes)
+    elif model_name.lower()=="cnn100":
+        return CNN100(in_channels=n_channels, num_classes=n_classes)
+    elif model_name.lower()=="cnn50":
+        return CNN50(in_channels=n_channels, num_classes=n_classes)
+    elif model_name.lower()=="cnn1":
+        return CNN1(in_channels=n_channels, num_classes=n_classes)
     else:
         raise Exception("Sorry, this model is not known")
