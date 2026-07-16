@@ -7,20 +7,20 @@ from torch import optim
 
 
 param = {
-    "data_flag": "pathmnist",
-    "model_name": "cnn1",
+    "data_flag": "breastmnist",
+    "model_name": "cnn05",
     "optimizer": "adam",
     "num_clients": 3,
     "rounds": 25,
-    "lr": 0.001,
-    "num_epoch": 5,
+    "lr": 0.0003,
+    "num_epoch": 3,
     "batch_size": 32,
     "size": 28,
     "record_tensorboard": True,
-    "data_augmentation": True,
+    "data_augmentation": False,
     "non_iid": False,
-    "patience": 8,
-    "delta": 0
+    "patience": 3,
+    "delta": 0.001
 }
 
 def get_info(data_flag): 

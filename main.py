@@ -20,11 +20,12 @@ def main(seed, uuid):
     writer = None
     if config.param["record_tensorboard"] == True: 
         run_name = f"{"fl"}__{uuid}_{config.param["data_flag"]}_{now:%Y-%m-%d__%H-%M}"
-        writer = SummaryWriter(f"fl_cnn1_tests/{run_name}")
+        writer = SummaryWriter(f"fl_breastcnn_tests/{run_name}")
         writer.add_text("param", f"Optimizer: {config.param["optimizer"]} | Epochs: {config.param["num_epoch"]} | Batch Size: {config.param["batch_size"]} | lr: {config.param["lr"]} | Model: {config.param["model_name"]} | Data augmentation: {config.param["data_augmentation"]} | Non-iid: {config.param["non_iid"]} | Num Clients: {config.param["num_clients"]} ")
     config.set_seed(seed)
     info, task, n_channels, n_classes,n_train_samples = config.get_info(config.param["data_flag"])
     global_model = models.get_model(config.param["model_name"], config.param["data_flag"])
+    print(config.get_n_total_params(global_model))
     client_loaders, distribution = dataset.get_client_loader(config.param["data_flag"], 28, config.param["num_clients"], config.param["batch_size"])
     val_loader = dataset.get_val_loader(config.param["data_flag"], 28, config.param["num_clients"], config.param["batch_size"])
     test_loader = dataset.get_test_loader(config.param["data_flag"], 28, config.param["num_clients"], config.param["batch_size"])
@@ -72,7 +73,7 @@ def main(seed, uuid):
 
         #* Early stopping 
         last_val_loss = np.average(val_loss_per_client)
-        if best_loss is None or last_val_loss < best_loss+config.param["delta"]:
+        if best_loss is None or last_val_loss < best_loss-config.param["delta"]:
             best_loss = last_val_loss
             no_improvement_count = 0
         else:
