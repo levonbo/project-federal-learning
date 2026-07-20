@@ -12,11 +12,11 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
 
 def objective(trial, data_flag):
-    optimizer_name = trial.suggest_categorical("Optimizer", ["SGD"])
-    learning_rate = trial.suggest_float('lr', 0.0001, 0.1, log=True)
-    momentum = trial.suggest_float('momentum', 0.5,0.99, log=False)
+    optimizer_name = trial.suggest_categorical("Optimizer", ["Adam"])
+    learning_rate = trial.suggest_float('lr', 0.0001, 0.01, log=True)
+    #momentum = trial.suggest_float('momentum', 0.5,0.99, log=False)
     #alpha = trial.suggest_float('alpha', 0.90,0.99, log=False)
-    BATCH_SIZE = trial.suggest_categorical('Batch Size', [16, 32, 64])
+    BATCH_SIZE = trial.suggest_categorical('Batch Size', [16, 32, 64,128])
 
     acc = 0
     #* Load info of medmnist dataset
@@ -24,7 +24,7 @@ def objective(trial, data_flag):
     task = info['task']
     model = models.get_model("basiccnn", data_flag).to(device)
 
-    optimizer = getattr(optim, optimizer_name)(model.parameters(), lr=learning_rate, momentum=momentum)
+    optimizer = getattr(optim, optimizer_name)(model.parameters(), lr=learning_rate)
 
     train_loader, validation_loader, _ = dataset.get_loader(data_flag, "basiccnn", BATCH_SIZE, True, 28)
 
@@ -33,7 +33,7 @@ def objective(trial, data_flag):
     else:
         criterion = nn.CrossEntropyLoss()
 
-    for _ in range(1):
+    for _ in range(5):
         model.train()
         for inputs, targets in train_loader:
             inputs, targets = inputs.to(device), targets.to(device)
@@ -73,17 +73,20 @@ def objective(trial, data_flag):
                 y_true = torch.cat((y_true, targets), 0)
                 y_score = torch.cat((y_score, outputs), 0)
                 val_samples += inputs.size(0)
+            y_true = y_true.detach().cpu().numpy()
+            y_score = y_score.detach().cpu().numpy()
+
             evaluator = Evaluator(data_flag, "val")
             metrics = evaluator.evaluate(y_score)
             auc, acc = metrics
             val_loss /= val_samples
     return acc
 
-mnist_datasets = ["pneumoniamnist", "chestmnist"]
+mnist_datasets = ["organamnist"]
 best_params = {}
 for data_flag in mnist_datasets: 
     study = optuna.create_study(direction='maximize')
-    study.optimize(lambda trial: objective(trial, data_flag), n_trials=2) # type: ignore
+    study.optimize(lambda trial: objective(trial, data_flag), n_trials=40) # type: ignore
     print("Best Hyperparameters:", study.best_params)
     best_params[data_flag] = study.best_params
 print(best_params)
