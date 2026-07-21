@@ -7,14 +7,14 @@ from torch import optim
 
 
 param = {
-    "data_flag": "breastmnist",
+    "data_flag": "organamnist",
     "model_name": "cnn05",
     "optimizer": "adam",
     "num_clients": 3,
     "rounds": 25,
     "lr": 0.0003,
     "num_epoch": 3,
-    "batch_size": 32,
+    "batch_size": 64,
     "size": 28,
     "record_tensorboard": True,
     "data_augmentation": False,
