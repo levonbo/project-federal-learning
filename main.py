@@ -20,8 +20,8 @@ def main(seed, uuid):
     writer = None
     if config.param["record_tensorboard"] == True: 
         run_name = f"{"fl"}__{uuid}_{config.param["data_flag"]}_{now:%Y-%m-%d__%H-%M}"
-        writer = SummaryWriter(f"fl_organamnist_tests/{run_name}")
-        writer.add_text("param", f"Optimizer: {config.param["optimizer"]} | Epochs: {config.param["num_epoch"]} | Batch Size: {config.param["batch_size"]} | lr: {config.param["lr"]} | Model: {config.param["model_name"]} | Data augmentation: {config.param["data_augmentation"]} | Non-iid: {config.param["non_iid"]} | Num Clients: {config.param["num_clients"]} ")
+        writer = SummaryWriter(f"fl_organamnist_02_tests/{run_name}")
+        writer.add_text("param", f"Optimizer: {config.param["optimizer"]} | Epochs: {config.param["num_epoch"]} | Batch Size: {config.param["batch_size"]} | lr: {config.param["lr"]} | Model: {config.param["model_name"]} | Data augmentation: {config.param["data_augmentation"]} | Non-iid: {config.param["non_iid"]} | Num Clients: {config.param["num_clients"]}| Samplesize: {config.param["perc_sample_size"]} ")
     config.set_seed(seed)
     info, task, n_channels, n_classes,n_train_samples = config.get_info(config.param["data_flag"])
     global_model = models.get_model(config.param["model_name"], config.param["data_flag"])

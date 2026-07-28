@@ -493,6 +493,26 @@ class MiniCNN(nn.Module):
         x = self.classifier(x)
         return x
 
+class MLP800(nn.Module):
+    def __init__(self, in_channels, num_classes):
+        super(MLP800, self).__init__()
+        self.classifier = nn.Sequential(
+            nn.Flatten(),
+            nn.Linear(in_channels * 28 * 28, 768),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(768, 256),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(256, 128),
+            nn.ReLU(),
+            nn.Linear(128, num_classes))
+    
+    def forward(self, x):
+        x = self.classifier(x)
+        return x
+
+
 def get_model(model_name, data_flag):
     _,_, n_channels, n_classes,_ = config.get_info(data_flag)
     if model_name.lower()=="basiccnn":
@@ -519,5 +539,7 @@ def get_model(model_name, data_flag):
         return CNN1(in_channels=n_channels, num_classes=n_classes)
     elif model_name.lower()=="cnn05":
         return CNN05(in_channels=n_channels, num_classes=n_classes)
+    elif model_name.lower()=="mlp800":
+        return MLP800(in_channels=n_channels, num_classes=n_classes)
     else:
         raise Exception("Sorry, this model is not known")

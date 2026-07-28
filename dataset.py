@@ -4,6 +4,7 @@ import torch.utils.data as torchdata
 from medmnist import INFO
 from torch.utils.data import random_split, DataLoader
 import config
+import torch
 from non_iid import calculate_distribution
 
 def get_client_loader(data_flag, size, num_clients, batch_size):
@@ -46,7 +47,14 @@ def get_client_loader(data_flag, size, num_clients, batch_size):
         train_dataset = torchdata.ConcatDataset([train_dataset_original, train_dataset_augmented])
     else:
         train_dataset = DataClass(split='train', transform=data_transform, download=True, size=config.param["size"], mmap_mode='r') #224
-   
+    
+    perc_train_size = config.param.get("perc_sample_size")
+    if perc_train_size is not None and perc_train_size < 1: 
+        abs_train_size = int(perc_train_size * len(train_dataset))
+        indices = torch.randperm(len(train_dataset))[:abs_train_size].tolist()
+        train_dataset = torchdata.Subset(train_dataset, indices)
+    print("Length of train dataset: ", len(train_dataset))
+
     list_distribution = calculate_distribution(num_clients, alpha=10.0, noniid=config.param["non_iid"])
 
     total = len(train_dataset)
@@ -70,6 +78,13 @@ def get_val_loader(data_flag, size, num_clients, batch_size):
     ])
     val_dataset = DataClass(split='val', transform=data_transform, download=True, size=size)
 
+    perc_val_size = config.param.get("perc_sample_size")
+    if perc_val_size is not None and perc_val_size < 1: 
+        abs_val_size = int(perc_val_size * len(val_dataset))
+        indices = torch.randperm(len(val_dataset))[:abs_val_size].tolist()
+        val_dataset = torchdata.Subset(val_dataset, indices)
+    print("Length of validation dataset: ", len(val_dataset))
+    
     partition_size = len(val_dataset) // num_clients
     lengths = [partition_size] * num_clients
     lengths[-1] += len(val_dataset) - sum(lengths)
@@ -91,6 +106,13 @@ def get_test_loader(data_flag, size, num_clients, batch_size):
     ])
     test_dataset = DataClass(split='test', transform=data_transform, download=True, size=size)
 
+    perc_test_size = config.param.get("perc_sample_size")
+    if perc_test_size is not None and perc_test_size < 1: 
+        abs_test_size = int(perc_test_size * len(test_dataset))
+        indices = torch.randperm(len(test_dataset))[:abs_test_size].tolist()
+        test_dataset = torchdata.Subset(test_dataset, indices)
+    print("Length of test dataset: ", len(test_dataset))
+    
     partition_size = len(test_dataset) // num_clients
     lengths = [partition_size] * num_clients
     lengths[-1] += len(test_dataset) - sum(lengths)
