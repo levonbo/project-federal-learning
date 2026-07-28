@@ -497,16 +497,16 @@ class MLP800(nn.Module):
     def __init__(self, in_channels, num_classes):
         super(MLP800, self).__init__()
         self.classifier = nn.Sequential(
-            nn.Flatten(),
-            nn.Linear(in_channels * 28 * 28, 768),
+            nn.Flatten(), #* to 1D vector
+            nn.Linear(in_channels * 28 * 28, 768), #* Hidden Layer 1
             nn.ReLU(),
             nn.Dropout(0.3),
-            nn.Linear(768, 256),
+            nn.Linear(768, 256), #* Hidden Layer 2
             nn.ReLU(),
             nn.Dropout(0.3),
-            nn.Linear(256, 128),
+            nn.Linear(256, 128), #* Hidden Layer 3
             nn.ReLU(),
-            nn.Linear(128, num_classes))
+            nn.Linear(128, num_classes)) #* Output Layer
     
     def forward(self, x):
         x = self.classifier(x)
