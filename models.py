@@ -134,9 +134,6 @@ class CNN200(nn.Module):
         x = self.fc(x)
         return x
 
-import torch.nn as nn
-
-
 class CNN100(nn.Module):
     def __init__(self, in_channels, num_classes):
         super(CNN100, self).__init__()
@@ -178,8 +175,6 @@ class CNN100(nn.Module):
         x = x.view(x.size(0), -1)
         x = self.fc(x)
         return x
-
-import torch.nn as nn
 
 
 class CNN50(nn.Module):
@@ -224,8 +219,6 @@ class CNN50(nn.Module):
         x = self.fc(x)
         return x
 
-import torch.nn as nn
-
 
 class CNN10(nn.Module):
     def __init__(self, in_channels, num_classes):
@@ -261,8 +254,6 @@ class CNN10(nn.Module):
         x = x.view(x.size(0), -1)
         x = self.fc(x)
         return x
-
-import torch.nn as nn
 
 
 class CNN5(nn.Module):
@@ -329,6 +320,7 @@ class CNN4(nn.Module):
         x = x.view(x.size(0), -1)
         x = self.fc(x)
         return x
+
 #* 1k parameters
 class CNN1(nn.Module):
     def __init__(self, in_channels, num_classes):
@@ -493,6 +485,7 @@ class MiniCNN(nn.Module):
         x = self.classifier(x)
         return x
 
+#* Multi Layer Perceptron 800k parameters
 class MLP800(nn.Module):
     def __init__(self, in_channels, num_classes):
         super(MLP800, self).__init__()
@@ -512,34 +505,164 @@ class MLP800(nn.Module):
         x = self.classifier(x)
         return x
 
+#* Multi Layer Perceptron with 400k parameters
+class MLP400(nn.Module):
+    def __init__(self, in_channels, num_classes):
+        super(MLP400, self).__init__()
+        self.classifier = nn.Sequential(
+            nn.Flatten(),                              # to 1D vector
+            nn.Linear(in_channels * 28 * 28, 350),     # Hidden Layer 1
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(350, 256),                        # Hidden Layer 2
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(256, 128),                        # Hidden Layer 3
+            nn.ReLU(),
+            nn.Linear(128, num_classes))                # Output Layer
+
+    def forward(self, x):
+        x = self.classifier(x)
+        return x
+
+#* Multi Layer Perceptron with 200k parameters
+class MLP200(nn.Module):
+    def __init__(self, in_channels, num_classes):
+        super(MLP200, self).__init__()
+        self.classifier = nn.Sequential(
+            nn.Flatten(),                              # to 1D vector
+            nn.Linear(in_channels * 28 * 28, 200),     # Hidden Layer 1
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(200, 128),                        # Hidden Layer 2
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(128, 64),                         # Hidden Layer 3
+            nn.ReLU(),
+            nn.Linear(64, num_classes))                 # Output Layer
+
+    def forward(self, x):
+        x = self.classifier(x)
+        return x
+
+#* Multi Layer Perceptron with 100k parameters
+class MLP100(nn.Module):
+    def __init__(self, in_channels, num_classes):
+        super(MLP100, self).__init__()
+        self.classifier = nn.Sequential(
+            nn.Flatten(),                              # to 1D vector
+            nn.Linear(in_channels * 28 * 28, 115),     # Hidden Layer 1
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(115, 64),                         # Hidden Layer 2
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(64, 32),                          # Hidden Layer 3
+            nn.ReLU(),
+            nn.Linear(32, num_classes))                 # Output Layer
+
+    def forward(self, x):
+        x = self.classifier(x)
+        return x
+
+#* Multi Layer Perceptron with 50k parameters
+class MLP50(nn.Module):
+    def __init__(self, in_channels, num_classes):
+        super(MLP50, self).__init__()
+        self.classifier = nn.Sequential(
+            nn.Flatten(),                              # to 1D vector
+            nn.Linear(in_channels * 28 * 28, 60),      # Hidden Layer 1
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(60, 40),                          # Hidden Layer 2
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(40, 20),                          # Hidden Layer 3
+            nn.ReLU(),
+            nn.Linear(20, num_classes))                 # Output Layer
+
+    def forward(self, x):
+        x = self.classifier(x)
+        return x
+
+#* Multi Layer Perceptron with 10k parameters
+class MLP10(nn.Module):
+    def __init__(self, in_channels, num_classes):
+        super(MLP10, self).__init__()
+        self.classifier = nn.Sequential(
+            nn.Flatten(),                              # to 1D vector
+            nn.Linear(in_channels * 28 * 28, 12),      # Hidden Layer 1
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(12, 20),                          # Hidden Layer 2
+            nn.ReLU(),
+            nn.Linear(20, num_classes))                 # Output Layer
+
+    def forward(self, x):
+        x = self.classifier(x)
+        return x
+
+#* Multi Layer Perceptron with 5k parameters
+class MLP5(nn.Module):
+    def __init__(self, in_channels, num_classes):
+        super(MLP5, self).__init__()
+        self.classifier = nn.Sequential(
+            nn.Flatten(),                              # to 1D vector
+            nn.Linear(in_channels * 28 * 28, 6),       # Hidden Layer 1
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.Linear(6, num_classes))                  # Output Layer
+
+    def forward(self, x):
+        x = self.classifier(x)
+        return x
+
+#* Multi Layer Perceptron with 1k parameters
+class MLP1(nn.Module):
+    def __init__(self, in_channels, num_classes):
+        super(MLP1, self).__init__()
+        self.classifier = nn.Sequential(
+            nn.Flatten(),                              # to 1D vector
+            nn.Linear(in_channels * 28 * 28, 1),       # Hidden Layer 1
+            nn.ReLU(),
+            nn.Linear(1, num_classes))                  # Output Layer
+
+    def forward(self, x):
+        x = self.classifier(x)
+        return x
+
+
+MODEL_REGISTRY = {
+    "basiccnn": BasicCNN,
+    "minicnn": MiniCNN,
+    "smallcnn": SmallCNN,
+    "standardcnn": StandardCNN,
+    "cnn400": CNN400,
+    "cnn200": CNN200,
+    "cnn100": CNN100,
+    "cnn50": CNN50,
+    "cnn10": CNN10,
+    "cnn5": CNN5,
+    "cnn1": CNN1,
+    "cnn05": CNN05,
+    "mlp800": MLP800,
+    "mlp400": MLP400,
+    "mlp200": MLP200,
+    "mlp100": MLP100,
+    "mlp50": MLP50,
+    "mlp10": MLP10,
+    "mlp5": MLP5,
+    "mlp1": MLP1,
+}
 
 def get_model(model_name, data_flag):
-    _,_, n_channels, n_classes,_ = config.get_info(data_flag)
-    if model_name.lower()=="basiccnn":
-        return BasicCNN(in_channels=n_channels, num_classes=n_classes)
-    elif model_name.lower()=="minicnn":
-        return MiniCNN(in_channels=n_channels, num_classes=n_classes)
-    elif model_name.lower()=="smallcnn": 
-        return SmallCNN(in_channels=n_channels, num_classes=n_classes)
-    elif model_name.lower()=="standardcnn":
-        return StandardCNN(in_channels=n_channels, num_classes=n_classes)
-    elif model_name.lower()=="cnn400":
-        return CNN400(in_channels=n_channels, num_classes=n_classes)
-    elif model_name.lower()=="cnn200":
-        return CNN200(in_channels=n_channels, num_classes=n_classes)
-    elif model_name.lower()=="cnn100":
-        return CNN100(in_channels=n_channels, num_classes=n_classes)
-    elif model_name.lower()=="cnn50":
-        return CNN50(in_channels=n_channels, num_classes=n_classes)
-    elif model_name.lower()=="cnn10":
-        return CNN10(in_channels=n_channels, num_classes=n_classes)
-    elif model_name.lower()=="cnn5":
-        return CNN5(in_channels=n_channels, num_classes=n_classes)
-    elif model_name.lower()=="cnn1":
-        return CNN1(in_channels=n_channels, num_classes=n_classes)
-    elif model_name.lower()=="cnn05":
-        return CNN05(in_channels=n_channels, num_classes=n_classes)
-    elif model_name.lower()=="mlp800":
-        return MLP800(in_channels=n_channels, num_classes=n_classes)
-    else:
-        raise Exception("Sorry, this model is not known")
+    _, _, n_channels, n_classes, _ = config.get_info(data_flag)
+
+    key = model_name.lower()
+    if key not in MODEL_REGISTRY:
+        raise ValueError(
+            f"Unknown model '{model_name}'. "
+            f"Available models: {sorted(MODEL_REGISTRY)}"
+        )
+
+    return MODEL_REGISTRY[key](in_channels=n_channels, num_classes=n_classes)
