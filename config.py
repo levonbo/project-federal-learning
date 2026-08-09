@@ -7,14 +7,14 @@ from torch import optim
 
 
 param = {
-    "data_flag": "pneumoniamnist",
-    "model_name": "mlp800",
+    "data_flag": "organamnist",
+    "model_name": "mlp1",
     "optimizer": "adam",
     "num_clients": 3,
     "rounds": 25,
-    "lr": 0.0003,
+    "lr": 0.001,
     "num_epoch": 3,
-    "batch_size": 128,
+    "batch_size": 16,
     "size": 28,
     "perc_sample_size": 0.01, 
     "record_tensorboard": True,
