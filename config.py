@@ -8,7 +8,7 @@ from torch import optim
 
 param = {
     "data_flag": "organamnist",
-    "model_name": "mlp1",
+    "model_name": "mlp5",
     "optimizer": "adam",
     "num_clients": 3,
     "rounds": 25,
@@ -16,7 +16,7 @@ param = {
     "num_epoch": 3,
     "batch_size": 16,
     "size": 28,
-    "perc_sample_size": 0.01, 
+    "perc_sample_size": 0.05, 
     "record_tensorboard": True,
     "data_augmentation": False,
     "non_iid": False,
